@@ -1,0 +1,38 @@
+# Flutter/Dart
+**/.dart_tool/
+**/.packages
+**/pubspec.lock
+
+# Build outputs
+**/build/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+
+# IDE settings
+**/.idea/
+**/*.iml
+**/.vscode/
+
+# Android
+**/android/.gradle/
+**/android/app/build/
+**/android/build/
+**/android/local.properties
+
+# iOS
+**/ios/Flutter/ephemeral/
+**/ios/Pods/
+**/ios/.generated/
+**/ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+
+# macOS
+**/macos/Flutter/ephemeral/
+
+# Linux
+**/linux/flutter/ephemeral/
+
+# Windows
+**/windows/flutter/ephemeral/
+
+# Web (tool cache)
+**/web/.dart_tool/
