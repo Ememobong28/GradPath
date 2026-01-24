@@ -81,14 +81,11 @@ class _LandingPageState extends State<LandingPage> {
             child: Column(
               children: [
                 const SizedBox(height: 110),
-
                 HeroSection(
                   emailController: _emailControllerTop,
                   onPrimaryCta: () => _scrollTo(_ctaKey),
                 ),
-
                 const SizedBox(height: 80),
-
                 RevealOnScroll(
                   scrollController: _scrollController,
                   child: Section(
@@ -99,9 +96,7 @@ class _LandingPageState extends State<LandingPage> {
                     child: const FeaturesGrid(),
                   ),
                 ),
-
                 const SizedBox(height: 110),
-
                 RevealOnScroll(
                   scrollController: _scrollController,
                   child: Section(
@@ -112,9 +107,7 @@ class _LandingPageState extends State<LandingPage> {
                     child: const HowItWorksTimeline(),
                   ),
                 ),
-
                 const SizedBox(height: 110),
-
                 RevealOnScroll(
                   scrollController: _scrollController,
                   child: Section(
@@ -125,9 +118,7 @@ class _LandingPageState extends State<LandingPage> {
                     child: const HonorsSection(),
                   ),
                 ),
-
                 const SizedBox(height: 110),
-
                 RevealOnScroll(
                   scrollController: _scrollController,
                   child: Section(
@@ -138,9 +129,7 @@ class _LandingPageState extends State<LandingPage> {
                     child: const FAQSection(),
                   ),
                 ),
-
                 const SizedBox(height: 110),
-
                 FinalCTA(
                   key: _ctaKey,
                   emailController: _emailControllerBottom,
@@ -157,14 +146,12 @@ class _LandingPageState extends State<LandingPage> {
                     );
                   },
                 ),
-
                 const SizedBox(height: 70),
                 const Footer(),
                 const SizedBox(height: 30),
               ],
             ),
           ),
-
           Positioned(
             top: 18,
             left: 0,
@@ -841,7 +828,6 @@ class HowItWorksTimeline extends StatelessWidget {
                 bottom: 10,
                 child: Container(width: 2, color: GPColors.border),
               ),
-
               Positioned(
                 left: 0,
                 top: 30,
@@ -858,7 +844,6 @@ class HowItWorksTimeline extends StatelessWidget {
                 top: 36,
                 child: const _TimelineNode(n: 1),
               ),
-
               Positioned(
                 left: c.maxWidth / 2 + 50,
                 top: 165,
@@ -875,7 +860,6 @@ class HowItWorksTimeline extends StatelessWidget {
                 top: 171,
                 child: const _TimelineNode(n: 2),
               ),
-
               Positioned(
                 left: 0,
                 top: 300,
@@ -942,9 +926,8 @@ class _StepTextBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: alignRight
-          ? CrossAxisAlignment.end
-          : CrossAxisAlignment.start,
+      crossAxisAlignment:
+          alignRight ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
         Text(
           title,
@@ -1048,67 +1031,67 @@ class HonorsSection extends StatelessWidget {
         final isWide = c.maxWidth > 900;
 
         Expanded card(String title, String body) => Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(28),
-            decoration: BoxDecoration(
-              color: GPColors.card,
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(color: GPColors.border),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                    color: GPColors.text,
-                    letterSpacing: -0.3,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  body,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    height: 1.6,
-                    color: GPColors.subtext,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  height: 240,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFBFCFD),
-                      borderRadius: BorderRadius.circular(18),
-                      border: Border.all(color: GPColors.border),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.02),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+              child: Container(
+                padding: const EdgeInsets.all(28),
+                decoration: BoxDecoration(
+                  color: GPColors.card,
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(color: GPColors.border),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.04),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
                     ),
-                    child: title == "Honors track"
-                        ? const HonorsMiniPreview()
-                        : const TransferMiniPreview(),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        );
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                        color: GPColors.text,
+                        letterSpacing: -0.3,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      body,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        height: 1.6,
+                        color: GPColors.subtext,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      height: 300,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFBFCFD),
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: GPColors.border),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.02),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: title == "Honors track"
+                            ? const HonorsMiniPreview()
+                            : const TransferMiniPreview(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
 
         if (!isWide) {
           return Column(
@@ -1590,11 +1573,10 @@ class _InteractivePlannerPreviewState extends State<InteractivePlannerPreview> {
                             .map((t) => Expanded(child: _TermColumn(term: t)))
                             .toList()
                             .expand((w) sync* {
-                              yield w;
-                              if (w != _terms.keys.last)
-                                yield const SizedBox(width: 14);
-                            })
-                            .toList(),
+                          yield w;
+                          if (w != _terms.keys.last)
+                            yield const SizedBox(width: 14);
+                        }).toList(),
                       )
                     : ListView(
                         children: _terms.keys
@@ -1848,9 +1830,8 @@ class _CourseCard extends StatelessWidget {
       curve: Curves.easeOut,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: dragging
-            ? Colors.white.withOpacity(0.95)
-            : const Color(0xFFF8FAFC),
+        color:
+            dragging ? Colors.white.withOpacity(0.95) : const Color(0xFFF8FAFC),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: GPColors.border),
         boxShadow: dragging
@@ -1992,9 +1973,8 @@ class _HonorsMiniPreviewState extends State<HonorsMiniPreview> {
           ),
           const SizedBox(height: 10),
 
-          // Fix height to avoid passing infinite height downstream
-          SizedBox(
-            height: 260,
+          // Preview area takes remaining space
+          Flexible(
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -2049,9 +2029,10 @@ class _HonorsMiniPreviewState extends State<HonorsMiniPreview> {
 
                   const SizedBox(width: 12),
 
-                  // steps (make them compact + scrollable)
+                  // steps (scrollable)
                   Expanded(
                     child: SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -2094,9 +2075,9 @@ class _HonorsMiniPreviewState extends State<HonorsMiniPreview> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: const Color(0xFF64748B),
-              fontWeight: FontWeight.w500,
-            ),
+                  color: const Color(0xFF64748B),
+                  fontWeight: FontWeight.w500,
+                ),
           ),
         ],
       ),
@@ -2145,9 +2126,8 @@ class _TransferMiniPreviewState extends State<TransferMiniPreview> {
             ),
             const SizedBox(height: 10),
 
-            // Fix height to avoid passing infinite height downstream
-            SizedBox(
-              height: 260,
+            // Preview area takes remaining space
+            Flexible(
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
@@ -2163,7 +2143,9 @@ class _TransferMiniPreviewState extends State<TransferMiniPreview> {
                         Expanded(
                           child: Text(
                             "Transfer",
-                            style: Theme.of(context).textTheme.labelLarge
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge
                                 ?.copyWith(
                                   color: const Color(0xFF334155),
                                   fontWeight: FontWeight.w700,
@@ -2175,7 +2157,9 @@ class _TransferMiniPreviewState extends State<TransferMiniPreview> {
                         Expanded(
                           child: Text(
                             "Equivalent",
-                            style: Theme.of(context).textTheme.labelLarge
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge
                                 ?.copyWith(
                                   color: const Color(0xFF334155),
                                   fontWeight: FontWeight.w700,
@@ -2185,11 +2169,11 @@ class _TransferMiniPreviewState extends State<TransferMiniPreview> {
                         const SizedBox(width: 10),
                         Text(
                           "Status",
-                          style: Theme.of(context).textTheme.labelLarge
-                              ?.copyWith(
-                                color: const Color(0xFF334155),
-                                fontWeight: FontWeight.w700,
-                              ),
+                          style:
+                              Theme.of(context).textTheme.labelLarge?.copyWith(
+                                    color: const Color(0xFF334155),
+                                    fontWeight: FontWeight.w700,
+                                  ),
                         ),
                       ],
                     ),
@@ -2225,9 +2209,9 @@ class _TransferMiniPreviewState extends State<TransferMiniPreview> {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: const Color(0xFF64748B),
-                fontWeight: FontWeight.w500,
-              ),
+                    color: const Color(0xFF64748B),
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ],
         ),
@@ -2251,14 +2235,12 @@ class _TransferMiniRow extends StatelessWidget {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: row.mapped
-              ? GPColors.greenSoft.withOpacity(0.75)
-              : Colors.white,
+          color:
+              row.mapped ? GPColors.greenSoft.withOpacity(0.75) : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: row.mapped
-                ? GPColors.green.withOpacity(0.35)
-                : GPColors.border,
+            color:
+                row.mapped ? GPColors.green.withOpacity(0.35) : GPColors.border,
           ),
         ),
         child: Row(
