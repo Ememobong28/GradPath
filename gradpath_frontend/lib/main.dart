@@ -1994,7 +1994,7 @@ class _HonorsMiniPreviewState extends State<HonorsMiniPreview> {
 
           // Fix height to avoid passing infinite height downstream
           SizedBox(
-            height: 220,
+            height: 260,
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -2003,7 +2003,7 @@ class _HonorsMiniPreviewState extends State<HonorsMiniPreview> {
                 border: Border.all(color: GPColors.border),
               ),
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // spine
                   SizedBox(
@@ -2147,7 +2147,7 @@ class _TransferMiniPreviewState extends State<TransferMiniPreview> {
 
             // Fix height to avoid passing infinite height downstream
             SizedBox(
-              height: 220,
+              height: 260,
               child: Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
