@@ -677,7 +677,10 @@ class _ToggleRow extends StatelessWidget {
         Switch(
           value: value,
           onChanged: onChanged,
-          activeThumbColor: GPColors.green,
+          thumbColor: MaterialStateProperty.resolveWith((states) =>
+              states.contains(MaterialState.selected)
+                  ? GPColors.green
+                  : Colors.grey),
         ),
       ],
     );

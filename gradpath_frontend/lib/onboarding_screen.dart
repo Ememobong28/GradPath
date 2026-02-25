@@ -794,7 +794,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 6),
           DropdownButtonFormField<String>(
-            initialValue: _targetTerm,
+            value: _targetTerm,
             decoration: _fieldDecoration("Select a term..."),
             items: _terms
                 .map((t) => DropdownMenuItem(value: t, child: Text(t)))
@@ -833,7 +833,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Switch(
                   value: _honors,
                   onChanged: (value) => setState(() => _honors = value),
-                  activeThumbColor: _actionGreen,
+                  thumbColor: MaterialStateProperty.resolveWith((states) =>
+                      states.contains(MaterialState.selected)
+                          ? _actionGreen
+                          : Colors.grey),
                 ),
               ],
             ),
@@ -943,7 +946,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Switch(
                   value: _summer,
                   onChanged: (value) => setState(() => _summer = value),
-                  activeThumbColor: _actionGreen,
+                  thumbColor: MaterialStateProperty.resolveWith((states) =>
+                      states.contains(MaterialState.selected)
+                          ? _actionGreen
+                          : Colors.grey),
                 ),
               ],
             ),

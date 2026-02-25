@@ -80,7 +80,7 @@ class _ExportScreenState extends State<ExportScreen> {
   }
 
   Future<void> _loadData() async {
-    final base = GradPathConfig.backendBaseUrl;
+    const base = GradPathConfig.backendBaseUrl;
     final sid = widget.studentId ?? (widget.planDetail?['student_id'] as int?);
     Map<String, dynamic>? plan = widget.planDetail;
     int? planId = plan?['id'] as int?;
@@ -335,7 +335,7 @@ class _ExportScreenState extends State<ExportScreen> {
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   pw.Text('ADVISOR APPROVAL SIGNATURE',
-                      style: pw.TextStyle(fontSize: 9)),
+                      style: const pw.TextStyle(fontSize: 9)),
                   pw.SizedBox(height: 30),
                   pw.Divider(thickness: 0.5),
                   pw.Text('Signature', style: const pw.TextStyle(fontSize: 10)),
@@ -345,7 +345,7 @@ class _ExportScreenState extends State<ExportScreen> {
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   pw.Text('STUDENT CONFIRMATION',
-                      style: pw.TextStyle(fontSize: 9)),
+                      style: const pw.TextStyle(fontSize: 9)),
                   pw.SizedBox(height: 30),
                   pw.Divider(thickness: 0.5),
                   pw.Text('Signature', style: const pw.TextStyle(fontSize: 10)),
