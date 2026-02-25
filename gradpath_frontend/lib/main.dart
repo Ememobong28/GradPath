@@ -1,6 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'gradpath_theme.dart';
+import 'onboarding_screen.dart';
+import 'returning_student_screen.dart';
 
 void main() => runApp(const GradPathApp());
 
@@ -37,26 +40,21 @@ class _LandingPageState extends State<LandingPage> {
   final _howKey = GlobalKey();
   final _honorsKey = GlobalKey();
   final _faqKey = GlobalKey();
-  final _ctaKey = GlobalKey();
-
-  final _emailControllerTop = TextEditingController();
-  final _emailControllerBottom = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(() {
       final shouldBeScrolled = _scrollController.offset > 40;
-      if (shouldBeScrolled != _scrolled)
+      if (shouldBeScrolled != _scrolled) {
         setState(() => _scrolled = shouldBeScrolled);
+      }
     });
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
-    _emailControllerTop.dispose();
-    _emailControllerBottom.dispose();
     super.dispose();
   }
 
@@ -71,6 +69,22 @@ class _LandingPageState extends State<LandingPage> {
     );
   }
 
+  void _openStartPlan() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+    );
+  }
+
+  void _openReturningStudent() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => ReturningStudentScreen(
+          onNewStudent: _openStartPlan,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -81,10 +95,7 @@ class _LandingPageState extends State<LandingPage> {
             child: Column(
               children: [
                 const SizedBox(height: 110),
-                HeroSection(
-                  emailController: _emailControllerTop,
-                  onPrimaryCta: () => _scrollTo(_ctaKey),
-                ),
+                const HeroSection(),
                 const SizedBox(height: 80),
                 RevealOnScroll(
                   scrollController: _scrollController,
@@ -103,7 +114,7 @@ class _LandingPageState extends State<LandingPage> {
                     key: _howKey,
                     title: "How it works",
                     subtitle:
-                        "Upload your audit. Confirm what we parsed. Get a plan that highlights bottlenecks, fixes, and what-if scenarios.",
+                        "Start your plan, enter your academic info, and generate a schedule built around your constraints.",
                     child: const HowItWorksTimeline(),
                   ),
                 ),
@@ -129,23 +140,6 @@ class _LandingPageState extends State<LandingPage> {
                     child: const FAQSection(),
                   ),
                 ),
-                const SizedBox(height: 110),
-                FinalCTA(
-                  key: _ctaKey,
-                  emailController: _emailControllerBottom,
-                  onSubmit: () {
-                    final email = _emailControllerBottom.text.trim();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          email.isEmpty
-                              ? "Drop your email to get updates."
-                              : "Got it — we’ll email you when GradPath is ready.",
-                        ),
-                      ),
-                    );
-                  },
-                ),
                 const SizedBox(height: 70),
                 const Footer(),
                 const SizedBox(height: 30),
@@ -162,30 +156,14 @@ class _LandingPageState extends State<LandingPage> {
               onHow: () => _scrollTo(_howKey),
               onHonors: () => _scrollTo(_honorsKey),
               onFAQ: () => _scrollTo(_faqKey),
-              onJoin: () => _scrollTo(_ctaKey),
+              onJoin: _openStartPlan,
+              onReturning: _openReturningStudent,
             ),
           ),
         ],
       ),
     );
   }
-}
-
-// ---------- Styling constants ----------
-class GPColors {
-  static const bg = Color(0xFFF7F7FB);
-  static const text = Color(0xFF0F172A);
-  static const subtext = Color(0xFF475569);
-  static const border = Color(0xFFE8E8EF);
-  static const card = Colors.white;
-
-  // Brand greens (slightly different feel from the reference site)
-  static const green = Color(0xFF15803D);
-  static const green2 = Color(0xFF22C55E);
-  static const greenSoft = Color(0xFFEAFBF0);
-
-  // Unique GradPath accent (adds identity)
-  static const accentInk = Color(0xFF0B3B2A);
 }
 
 // ---------- Navbar (full-width -> centered glass panel on scroll) ----------
@@ -198,6 +176,7 @@ class AdaptiveNavBar extends StatelessWidget {
     required this.onHonors,
     required this.onFAQ,
     required this.onJoin,
+    this.onReturning,
   });
 
   final bool scrolled;
@@ -206,6 +185,7 @@ class AdaptiveNavBar extends StatelessWidget {
   final VoidCallback onHonors;
   final VoidCallback onFAQ;
   final VoidCallback onJoin;
+  final VoidCallback? onReturning;
 
   @override
   Widget build(BuildContext context) {
@@ -226,6 +206,7 @@ class AdaptiveNavBar extends StatelessWidget {
               onHonors: onHonors,
               onFAQ: onFAQ,
               onJoin: onJoin,
+              onReturning: onReturning,
               compact: false,
             ),
           ),
@@ -283,6 +264,7 @@ class AdaptiveNavBar extends StatelessWidget {
                     onHonors: onHonors,
                     onFAQ: onFAQ,
                     onJoin: onJoin,
+                    onReturning: onReturning,
                     compact: true,
                   ),
                 ),
@@ -303,6 +285,7 @@ class _NavRow extends StatelessWidget {
     required this.onFAQ,
     required this.onJoin,
     required this.compact,
+    this.onReturning,
   });
 
   final VoidCallback onFeatures;
@@ -310,6 +293,7 @@ class _NavRow extends StatelessWidget {
   final VoidCallback onHonors;
   final VoidCallback onFAQ;
   final VoidCallback onJoin;
+  final VoidCallback? onReturning;
   final bool compact;
 
   @override
@@ -349,6 +333,17 @@ class _NavRow extends StatelessWidget {
           _NavLink("Honors", onTap: onHonors),
           _NavLink("FAQ", onTap: onFAQ),
           const SizedBox(width: 10),
+          if (onReturning != null) ...[
+            TextButton(
+              onPressed: onReturning,
+              child: const Text(
+                'Sign in',
+                style: TextStyle(
+                    color: GPColors.subtext, fontWeight: FontWeight.w600),
+              ),
+            ),
+            const SizedBox(width: 4),
+          ],
         ],
         ElevatedButton(
           style: ElevatedButton.styleFrom(
@@ -361,7 +356,7 @@ class _NavRow extends StatelessWidget {
             ),
           ),
           onPressed: onJoin,
-          child: const Text("Request an invite"),
+          child: const Text("Get started"),
         ),
       ],
     );
@@ -398,7 +393,7 @@ class _NavLinkState extends State<_NavLink> {
           ),
           child: Text(
             widget.label,
-            style: TextStyle(
+            style: const TextStyle(
               color: GPColors.text,
               fontWeight: FontWeight.w600,
               decoration: TextDecoration.none,
@@ -464,14 +459,7 @@ class Section extends StatelessWidget {
 
 // ---------- Hero ----------
 class HeroSection extends StatelessWidget {
-  const HeroSection({
-    super.key,
-    required this.emailController,
-    required this.onPrimaryCta,
-  });
-
-  final TextEditingController emailController;
-  final VoidCallback onPrimaryCta;
+  const HeroSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -509,82 +497,15 @@ class HeroSection extends StatelessWidget {
               const SizedBox(height: 18),
 
               // Signature chips (distinct feel)
-              Wrap(
+              const Wrap(
                 alignment: WrapAlignment.center,
                 spacing: 10,
                 runSpacing: 10,
-                children: const [
+                children: [
                   _Chip("Prereq bottlenecks detected"),
                   _Chip("Honors & transfer support"),
                   _Chip("Fall/Spring/Summer planning"),
                 ],
-              ),
-
-              const SizedBox(height: 24),
-
-              // CTA row: less “pill” + more product-like
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 560),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: emailController,
-                        decoration: InputDecoration(
-                          hintText: "Enter your email for updates",
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 16,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: const BorderSide(
-                              color: GPColors.border,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: const BorderSide(
-                              color: GPColors.border,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: const BorderSide(
-                              color: GPColors.green,
-                              width: 1.4,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: GPColors.green,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 16,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      onPressed: onPrimaryCta,
-                      child: const Text("Request an invite"),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 14),
-              const Text(
-                "No spam. Just launch updates.",
-                style: TextStyle(color: Color(0xFF64748B), fontSize: 12),
               ),
 
               const SizedBox(height: 38),
@@ -646,7 +567,7 @@ class FeaturesGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = const [
+    const items = [
       _Feature(
         "Degree Audit Parsing",
         "Upload your audit and confirm what we extracted.",
@@ -793,26 +714,26 @@ class HowItWorksTimeline extends StatelessWidget {
         final isWide = c.maxWidth > 920;
 
         if (!isWide) {
-          return Column(
-            children: const [
+          return const Column(
+            children: [
               _StepCard(
                 n: 1,
-                title: "Upload your audit",
-                desc: "Add your degree audit + requirements (PDF/CSV).",
+                title: "Start My Plan",
+                desc: "Create an account or log in to begin.",
               ),
               SizedBox(height: 16),
               _StepCard(
                 n: 2,
-                title: "Confirm the match",
+                title: "Add academic info",
                 desc:
-                    "Review extracted courses, fix mismatches, lock constraints.",
+                    "Upload a transcript or audit, set your major, honors status, and credit limits.",
               ),
               SizedBox(height: 16),
               _StepCard(
                 n: 3,
-                title: "Get your plan",
+                title: "Generate My Plan",
                 desc:
-                    "See your graduation forecast, bottlenecks, and a recommended schedule.",
+                    "See a term-by-term schedule and the blockers to address.",
               ),
             ],
           );
@@ -834,9 +755,9 @@ class HowItWorksTimeline extends StatelessWidget {
                 width: c.maxWidth / 2 - 50,
                 child: const _StepTextBlock(
                   alignRight: true,
-                  title: "Upload your audit",
+                  title: "Start My Plan",
                   desc:
-                      "Upload your degree audit and course catalog (or use the template).",
+                      "Create an account or log in to start building your plan.",
                 ),
               ),
               Positioned(
@@ -850,9 +771,9 @@ class HowItWorksTimeline extends StatelessWidget {
                 width: c.maxWidth / 2 - 50,
                 child: const _StepTextBlock(
                   alignRight: false,
-                  title: "Confirm the match",
+                  title: "Add academic info",
                   desc:
-                      "We parse what we can. You confirm it fast so the plan stays correct.",
+                      "Upload your transcript or audit, then set your constraints.",
                 ),
               ),
               Positioned(
@@ -866,9 +787,8 @@ class HowItWorksTimeline extends StatelessWidget {
                 width: c.maxWidth / 2 - 50,
                 child: const _StepTextBlock(
                   alignRight: true,
-                  title: "Get your plan",
-                  desc:
-                      "An optimized schedule plus bottlenecks, risks, and what-if scenarios.",
+                  title: "Generate My Plan",
+                  desc: "Get a term-by-term schedule and graduation forecast.",
                 ),
               ),
               Positioned(
@@ -1208,134 +1128,14 @@ class FAQSection extends StatelessWidget {
   }
 }
 
-// ---------- Final CTA ----------
-class FinalCTA extends StatelessWidget {
-  const FinalCTA({
-    super.key,
-    required this.emailController,
-    required this.onSubmit,
-  });
-
-  final TextEditingController emailController;
-  final VoidCallback onSubmit;
-
-  @override
-  Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final maxW = width > 1200 ? 1100.0 : width * 0.92;
-
-    return Center(
-      child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxW),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 34),
-          decoration: BoxDecoration(
-            color: GPColors.card,
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: GPColors.border),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 28,
-                offset: const Offset(0, 14),
-              ),
-            ],
-          ),
-          child: Column(
-            children: [
-              const Text(
-                "Launching soon — want updates?",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 34,
-                  fontWeight: FontWeight.w900,
-                  color: GPColors.text,
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                "Drop your email and we’ll send you early access when it opens.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 15,
-                  color: GPColors.subtext,
-                  height: 1.45,
-                ),
-              ),
-              const SizedBox(height: 22),
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 560),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: emailController,
-                        decoration: InputDecoration(
-                          hintText: "Enter your email",
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 16,
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: const BorderSide(
-                              color: GPColors.border,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: const BorderSide(
-                              color: GPColors.border,
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            borderSide: const BorderSide(
-                              color: GPColors.green,
-                              width: 1.4,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: GPColors.green,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 16,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      onPressed: onSubmit,
-                      child: const Text("Get updates"),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 // ---------- Footer ----------
 class Footer extends StatelessWidget {
   const Footer({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: const [
+    return const Column(
+      children: [
         Text(
           "GradPath",
           style: TextStyle(fontWeight: FontWeight.w900, color: GPColors.text),
@@ -1517,14 +1317,14 @@ class _InteractivePlannerPreviewState extends State<InteractivePlannerPreview> {
                     transitionBuilder: (child, animation) =>
                         ScaleTransition(scale: animation, child: child),
                     child: _hasOptimization
-                        ? _Pill(
-                            key: const ValueKey("optimized"),
+                        ? const _Pill(
+                            key: ValueKey("optimized"),
                             icon: Icons.check_circle,
                             label: "Path optimized!",
                             subtle: false,
                           )
-                        : _Pill(
-                            key: const ValueKey("bottleneck"),
+                        : const _Pill(
+                            key: ValueKey("bottleneck"),
                             icon: Icons.warning_amber_rounded,
                             label: "1 bottleneck detected",
                             subtle: true,
@@ -1574,8 +1374,9 @@ class _InteractivePlannerPreviewState extends State<InteractivePlannerPreview> {
                             .toList()
                             .expand((w) sync* {
                           yield w;
-                          if (w != _terms.keys.last)
+                          if (w != _terms.keys.last) {
                             yield const SizedBox(width: 14);
+                          }
                         }).toList(),
                       )
                     : ListView(
@@ -1955,7 +1756,7 @@ class _HonorsMiniPreviewState extends State<HonorsMiniPreview> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Wrap(
+          const Wrap(
             spacing: 10,
             runSpacing: 10,
             children: [
@@ -2094,9 +1895,9 @@ class TransferMiniPreview extends StatefulWidget {
 
 class _TransferMiniPreviewState extends State<TransferMiniPreview> {
   final List<_TransferRow> _rows = [
-    _TransferRow("MATH 1XX", "MATH 130 (Calc I)", true),
-    _TransferRow("ENG 101", "ENG 101 (Comp I)", true),
-    _TransferRow("CS 2XX", "CS 120 (Intro CS)", false),
+    const _TransferRow("MATH 1XX", "MATH 130 (Calc I)", true),
+    const _TransferRow("ENG 101", "ENG 101 (Comp I)", true),
+    const _TransferRow("CS 2XX", "CS 120 (Intro CS)", false),
   ];
 
   @override
@@ -2108,10 +1909,10 @@ class _TransferMiniPreviewState extends State<TransferMiniPreview> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Wrap(
+            const Wrap(
               spacing: 10,
               runSpacing: 10,
-              children: const [
+              children: [
                 _MiniChip(
                   icon: Icons.swap_horiz,
                   label: "3 credits imported",
