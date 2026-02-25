@@ -2,6 +2,20 @@
 
 A new Flutter project.
 
+## College Scorecard API (US schools + majors)
+
+This app uses the U.S. Department of Education College Scorecard API for school
+and major search. For production use, **do not** commit the API key. Pass it via
+`--dart-define` when running or building.
+
+Example:
+
+```
+flutter run --dart-define=COLLEGE_SCORECARD_API_KEY=YOUR_KEY
+```
+
+You can obtain a key at https://api.data.gov/signup/.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
