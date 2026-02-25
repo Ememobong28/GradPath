@@ -151,7 +151,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           _maxCredits = ((data['max_credits'] as int?) ?? 15).toDouble();
           _summer = (data['summer_ok'] as bool?) ?? true;
           if (data['target_grad_term'] != null) {
-            _targetTerm = data['target_grad_term'] as String;
+            final loadedTerm = data['target_grad_term'] as String;
+            if (_terms.contains(loadedTerm)) {
+              _targetTerm = loadedTerm;
+            }
           }
           _major = data['major'] as String?;
           final schoolName = data['school'] as String?;
