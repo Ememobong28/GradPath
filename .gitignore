@@ -28,6 +28,28 @@
 # macOS
 **/macos/Flutter/ephemeral/
 
+# Python/Backend
+**/.venv/
+**/.env
+*.db
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Generated Flutter files
+**/linux/flutter/generated_plugin_registrant.*
+**/macos/Flutter/GeneratedPluginRegistrant.*
+**/windows/flutter/generated_plugin_registrant.*
+
+# Local files and test data
+.DS_Store
+*.pdf
+*.png
+*.jpg
+
+# Secret files
+.env.local
+.env.*.local
 # Linux
 **/linux/flutter/ephemeral/
 
