@@ -37,7 +37,8 @@ jobs:
       - name: Build web
         run: |
           cd gradpath_frontend
-          flutter build web --release --base-href /GradPath/
+          flutter build web --release --base-href /GradPath/ \
+            --dart-define=BACKEND_BASE_URL=https://gradpath-backend.onrender.com
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
