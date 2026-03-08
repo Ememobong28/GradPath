@@ -18,15 +18,15 @@
 
 <table>
   <tr>
-    <td><img src="landing%20page%201.png" width="400"/></td>
-    <td><img src="landing%20page%202.png" width="400"/></td>
+    <td><img src="landing%20page%201.png" width="800"/></td>
+    <td><img src="landing%20page%202.png" width="800"/></td>
   </tr>
   <tr>
-    <td><img src="landing%20page%203.png" width="400"/></td>
-    <td><img src="landing%20page%204.png" width="400"/></td>
+    <td><img src="landing%20page%203.png" width="800"/></td>
+    <td><img src="landing%20page%204.png" width="800"/></td>
   </tr>
   <tr>
-    <td><img src="landing%20page%205.png" width="400"/></td>
+    <td><img src="landing%20page%205.png" width="800"/></td>
     <td></td>
   </tr>
 </table>
@@ -35,8 +35,8 @@
 
 <table>
   <tr>
-    <td><img src="Sign-in%20screen.png" width="480"/></td>
-    <td><img src="onboarding.png" width="480"/></td>
+    <td><img src="Sign-in%20screen.png" width="800"/></td>
+    <td><img src="onboarding.png" width="800"/></td>
   </tr>
 </table>
 
@@ -44,21 +44,21 @@
 
 <table>
   <tr>
-    <td><img src="Dashboard.png" width="480"/></td>
-    <td><img src="Plan.png" width="480"/></td>
+    <td><img src="Dashboard.png" width="800"/></td>
+    <td><img src="Plan.png" width="800"/></td>
   </tr>
 </table>
 
 ### What-If Simulator
 
-<img src="What-if%20simulator.png" width="960"/>
+<img src="What-if%20simulator.png" width="800"/>
 
 ### Risk Analysis & Export
 
 <table>
   <tr>
-    <td><img src="Risk%20Page.png" width="480"/></td>
-    <td><img src="Export%20Page%20.png" width="480"/></td>
+    <td><img src="Risk%20Page.png" width="800"/></td>
+    <td><img src="Export%20Page%20.png" width="800"/></td>
   </tr>
 </table>
 
