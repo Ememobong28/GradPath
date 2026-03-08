@@ -16,32 +16,51 @@
 
 ### Landing Page
 
-| | | |
-|---|---|---|
-| ![Landing 1](landing%20page%201.png) | ![Landing 2](landing%20page%202.png) | ![Landing 3](landing%20page%203.png) |
-| ![Landing 4](landing%20page%204.png) | ![Landing 5](landing%20page%205.png) | |
+<table>
+  <tr>
+    <td><img src="landing%20page%201.png" width="400"/></td>
+    <td><img src="landing%20page%202.png" width="400"/></td>
+  </tr>
+  <tr>
+    <td><img src="landing%20page%203.png" width="400"/></td>
+    <td><img src="landing%20page%204.png" width="400"/></td>
+  </tr>
+  <tr>
+    <td><img src="landing%20page%205.png" width="400"/></td>
+    <td></td>
+  </tr>
+</table>
 
 ### Sign In & Onboarding
 
-| Sign In | Onboarding |
-|---|---|
-| ![Sign In](Sign-in%20screen.png) | ![Onboarding](onboarding.png) |
+<table>
+  <tr>
+    <td><img src="Sign-in%20screen.png" width="480"/></td>
+    <td><img src="onboarding.png" width="480"/></td>
+  </tr>
+</table>
 
 ### Dashboard & Plan
 
-| Dashboard | My Plan |
-|---|---|
-| ![Dashboard](Dashboard.png) | ![Plan](Plan.png) |
+<table>
+  <tr>
+    <td><img src="Dashboard.png" width="480"/></td>
+    <td><img src="Plan.png" width="480"/></td>
+  </tr>
+</table>
 
 ### What-If Simulator
 
-![What-If Simulator](What-if%20simulator.png)
+<img src="What-if%20simulator.png" width="960"/>
 
 ### Risk Analysis & Export
 
-| Risk Analysis | Export |
-|---|---|
-| ![Risk Analysis](Risk%20Page.png) | ![Export](Export%20Page%20.png) |
+<table>
+  <tr>
+    <td><img src="Risk%20Page.png" width="480"/></td>
+    <td><img src="Export%20Page%20.png" width="480"/></td>
+  </tr>
+</table>
 
 ---
 
