@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -8,9 +9,17 @@ import app.models  # noqa: F401
 
 app = FastAPI(title="GradPath API", version="0.1.0")
 
+ALLOWED_ORIGINS = [
+    "https://ememobong28.github.io",
+    "http://localhost:8080",
+    "http://localhost:3000",
+]
+if os.getenv("ENVIRONMENT") != "production":
+    ALLOWED_ORIGINS = ["*"]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
