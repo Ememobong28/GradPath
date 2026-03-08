@@ -48,20 +48,8 @@ __pycache__/
 *.jpg
 *.mp4
 
-# Allow root-level screenshots and demo video
-!/Dashboard.png
-!/Plan.png
-!/Sign-in screen.png
-!/onboarding.png
-!/What-if simulator.png
-!/Risk Page.png
-!/Export Page .png
-!/landing page 1.png
-!/landing page 2.png
-!/landing page 3.png
-!/landing page 4.png
-!/landing page 5.png
-!/PSU Logo.png
+# Allow screenshots folder and PSU logo
+!/docs/screenshots/*.png
 # GradPathDemo.mp4 is too large (188MB) — host externally (YouTube/Drive)
 
 # Secret files
