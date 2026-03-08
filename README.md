@@ -40,15 +40,15 @@
 
 ### What-If Simulator
 
-<img src="docs/screenshots/What-if%20simulator.png" width="100%"/>
+<img src="docs/screenshots/what-if.png" width="100%"/>
 
 ### Risk Analysis
 
-<img src="docs/screenshots/Risk%20Page.png" width="100%"/>
+<img src="docs/screenshots/Risk%20Analysis.png" width="100%"/>
 
 ### Export
 
-<img src="docs/screenshots/Export%20Page%20.png" width="100%"/>
+<img src="docs/screenshots/export.png" width="100%"/>
 
 ---
 
