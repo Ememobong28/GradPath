@@ -322,78 +322,138 @@ class _WhatIfScreenState extends State<WhatIfScreen> {
       children: [
         // ── Left panel ─────────────────────────────────────────
         Container(
-          width: 290,
-          color: Colors.white,
+          width: 300,
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            border: Border(right: BorderSide(color: GPColors.border)),
+          ),
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(22),
+            padding: const EdgeInsets.fromLTRB(22, 24, 22, 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header
-                const Row(
-                  children: [
-                    Icon(Icons.tune, size: 18, color: GPColors.green),
-                    SizedBox(width: 8),
-                    Text(
-                      'Simulation Engine',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
-                        color: GPColors.text,
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: GPColors.greenSoft,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.tune_rounded, size: 18, color: GPColors.green),
+                      SizedBox(width: 8),
+                      Text(
+                        'Simulation Engine',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w800,
+                          color: GPColors.green,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 22),
+                const SizedBox(height: 24),
 
-                // Max credits slider
+                // Max credits label + value
+                const Text(
+                  'MAX CREDITS / SEMESTER',
+                  style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: GPColors.subtext,
+                      letterSpacing: 0.8),
+                ),
+                const SizedBox(height: 10),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    const Text(
-                      'MAX CREDITS / SEMESTER',
-                      style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          color: GPColors.subtext,
-                          letterSpacing: 0.8),
-                    ),
                     Text(
                       '${_maxCredits.round()}',
                       style: const TextStyle(
-                        fontWeight: FontWeight.w800,
+                        fontSize: 36,
+                        fontWeight: FontWeight.w900,
                         color: GPColors.green,
-                        fontSize: 16,
+                        height: 1,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 4),
+                      child: Text(
+                        'credits',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          color: GPColors.subtext,
+                        ),
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: _maxCredits > 18
+                            ? GPColors.riskCriticalSoft
+                            : _maxCredits < 12
+                                ? GPColors.amberSoft
+                                : GPColors.greenSoft,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        _maxCredits > 18
+                            ? 'Overload'
+                            : _maxCredits < 12
+                                ? 'Part-time'
+                                : 'Full-time',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: _maxCredits > 18
+                              ? GPColors.riskCritical
+                              : _maxCredits < 12
+                                  ? GPColors.amber
+                                  : GPColors.green,
+                        ),
                       ),
                     ),
                   ],
                 ),
-                Slider(
-                  value: _maxCredits,
-                  min: 9,
-                  max: 22,
-                  divisions: 13,
-                  activeColor: GPColors.green,
-                  inactiveColor: const Color(0xFFE2E8F0),
-                  onChanged: (v) => setState(() => _maxCredits = v),
+                const SizedBox(height: 8),
+                SliderTheme(
+                  data: SliderThemeData(
+                    trackHeight: 5,
+                    thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
+                    overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
+                    activeTrackColor: GPColors.green,
+                    inactiveTrackColor: GPColors.border,
+                    thumbColor: GPColors.green,
+                    overlayColor: GPColors.green.withValues(alpha: 0.12),
+                  ),
+                  child: Slider(
+                    value: _maxCredits,
+                    min: 9,
+                    max: 22,
+                    divisions: 13,
+                    onChanged: (v) => setState(() => _maxCredits = v),
+                  ),
                 ),
-                const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Part-time',
-                        style:
-                            TextStyle(fontSize: 10, color: GPColors.subtext)),
-                    Text('Full-time',
-                        style:
-                            TextStyle(fontSize: 10, color: GPColors.subtext)),
-                    Text('Overload',
-                        style:
-                            TextStyle(fontSize: 10, color: GPColors.subtext)),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _SliderLabel('9 cr', _maxCredits < 12),
+                      _SliderLabel('15 cr', _maxCredits >= 12 && _maxCredits <= 18),
+                      _SliderLabel('22 cr', _maxCredits > 18),
+                    ],
+                  ),
                 ),
+                const SizedBox(height: 24),
+                const Divider(color: GPColors.border, height: 1),
                 const SizedBox(height: 20),
-                const Divider(color: GPColors.border),
-                const SizedBox(height: 16),
 
                 // Toggles
                 _ToggleRow(
@@ -401,20 +461,20 @@ class _WhatIfScreenState extends State<WhatIfScreen> {
                   value: _summerTerms,
                   onChanged: (v) => setState(() => _summerTerms = v),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 4),
                 _ToggleRow(
                   label: 'Include Internships',
                   value: _includeInternships,
                   onChanged: (v) => setState(() => _includeInternships = v),
                 ),
-                const SizedBox(height: 22),
-                const Divider(color: GPColors.border),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
+                const Divider(color: GPColors.border, height: 1),
+                const SizedBox(height: 20),
 
                 // Academic performance section
                 if (_currentPlanDetail != null) ...[
                   const Text(
-                    'ACADEMIC PERFORMANCE',
+                    'UPCOMING COURSES',
                     style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w700,
@@ -434,7 +494,7 @@ class _WhatIfScreenState extends State<WhatIfScreen> {
                       backgroundColor: GPColors.green,
                       foregroundColor: Colors.white,
                       elevation: 0,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12)),
                     ),
@@ -446,8 +506,12 @@ class _WhatIfScreenState extends State<WhatIfScreen> {
                             child: CircularProgressIndicator(
                                 color: Colors.white, strokeWidth: 2),
                           )
-                        : const Icon(Icons.play_arrow),
-                    label: Text(_simulating ? 'Simulating…' : 'Run Simulation'),
+                        : const Icon(Icons.play_arrow_rounded, size: 18),
+                    label: Text(
+                      _simulating ? 'Simulating…' : 'Run Simulation',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 14),
+                    ),
                   ),
                 ),
               ],
@@ -457,140 +521,106 @@ class _WhatIfScreenState extends State<WhatIfScreen> {
 
         // ── Main content ───────────────────────────────────────
         Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                Row(
-                  children: [
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'GradPath Simulator',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w900,
-                            color: GPColors.text,
-                          ),
-                        ),
-                        Text(
-                          'WHAT-IF ACADEMIC HUB',
-                          style: TextStyle(
-                              fontSize: 10,
-                              color: GPColors.subtext,
-                              letterSpacing: 1),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
-                    // Risk score pill
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: GPColors.border),
-                      ),
-                      child: Row(
+          child: ColoredBox(
+            color: GPColors.bg,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(28),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'CURRENT RISK SCORE',
+                          Text(
+                            'GradPath Simulator',
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w900,
+                              color: GPColors.text,
+                            ),
+                          ),
+                          SizedBox(height: 2),
+                          Text(
+                            'WHAT-IF ACADEMIC HUB',
                             style: TextStyle(
                                 fontSize: 10,
                                 color: GPColors.subtext,
+                                letterSpacing: 1.2,
                                 fontWeight: FontWeight.w600),
-                          ),
-                          const SizedBox(width: 10),
-                          SizedBox(
-                            width: 80,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(999),
-                              child: LinearProgressIndicator(
-                                value: riskScore / 100,
-                                minHeight: 8,
-                                backgroundColor: const Color(0xFFE2E8F0),
-                                color: riskScore > 60
-                                    ? GPColors.riskCritical
-                                    : riskScore > 30
-                                        ? GPColors.amber
-                                        : GPColors.green,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            '$riskScore%',
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w800, fontSize: 14),
                           ),
                         ],
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: GPColors.accentInk,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                      const Spacer(),
+                      // Circular risk gauge
+                      _RiskGauge(score: riskScore),
+                      const SizedBox(width: 16),
+                      ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: GPColors.accentInk,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 18, vertical: 14),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                        onPressed: () {},
+                        icon: const Icon(Icons.bookmark_add_outlined, size: 16),
+                        label: const Text('Save Scenario',
+                            style: TextStyle(fontWeight: FontWeight.w700)),
                       ),
-                      onPressed: () {},
-                      icon: const Icon(Icons.save_outlined, size: 16),
-                      label: const Text('Save Scenario'),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
 
-                // KPI cards
-                Row(
-                  children: [
-                    Expanded(
-                      child: _KpiCard(
-                        label: 'EXPECTED GRADUATION',
-                        value: _expectedGrad,
-                        icon: Icons.school_rounded,
-                        accentColor: GPColors.green,
-                        badge: (_simResult != null && simTerms > 0)
-                            ? (termDiff > 0
-                                ? '$termDiff Semester${termDiff > 1 ? "s" : ""} Earlier'
-                                : termDiff < 0
-                                    ? '${-termDiff} Semester${-termDiff > 1 ? "s" : ""} Longer'
-                                    : 'Same Duration')
-                            : null,
-                        badgePosOrNeg: termDiff >= 0,
+                  // KPI cards
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _KpiCard(
+                          label: 'EXPECTED GRADUATION',
+                          value: _expectedGrad,
+                          icon: Icons.school_rounded,
+                          accentColor: GPColors.green,
+                          badge: (_simResult != null && simTerms > 0)
+                              ? (termDiff > 0
+                                  ? '$termDiff Semester${termDiff > 1 ? "s" : ""} Earlier'
+                                  : termDiff < 0
+                                      ? '${-termDiff} Semester${-termDiff > 1 ? "s" : ""} Longer'
+                                      : 'Same Duration')
+                              : null,
+                          badgePosOrNeg: termDiff >= 0,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _KpiCard(
-                        label: 'AVG. LOAD PER SEMESTER',
-                        value: '${_avgLoad.toStringAsFixed(1)} Credits',
-                        icon: Icons.bar_chart_rounded,
-                        accentColor: GPColors.blue,
-                        badge:
-                            _avgLoad <= 18 ? 'Sustainable Pace' : 'Heavy Load',
-                        badgePosOrNeg: _avgLoad <= 18,
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _KpiCard(
+                          label: 'AVG. LOAD PER SEMESTER',
+                          value: '${_avgLoad.toStringAsFixed(1)} Credits',
+                          icon: Icons.bar_chart_rounded,
+                          accentColor: GPColors.blue,
+                          badge: _avgLoad <= 18
+                              ? 'Sustainable Pace'
+                              : 'Heavy Load',
+                          badgePosOrNeg: _avgLoad <= 18,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
 
-                // Dynamic Roadmap
-                _DynamicRoadmap(terms: _terms),
-                const SizedBox(height: 20),
+                  // Dynamic Roadmap
+                  _DynamicRoadmap(terms: _terms),
+                  const SizedBox(height: 20),
 
-                // Optimization hint — shown when no simulation has run yet
-                if (_simResult == null) const _OptimizationBanner(),
-              ],
+                  // Optimization hint — shown when no simulation has run yet
+                  if (_simResult == null) const _OptimizationBanner(),
+                ],
+              ),
             ),
           ),
         ),
@@ -621,9 +651,10 @@ class _WhatIfScreenState extends State<WhatIfScreen> {
     return courses.take(3).map((c) {
       final code = c['course_code'] as String? ?? 'N/A';
       final title = c['course_title'] as String? ?? '';
+      final credits = (c['credits'] as num?)?.toInt() ?? 3;
       return Container(
         margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: GPColors.bg,
           borderRadius: BorderRadius.circular(10),
@@ -648,14 +679,44 @@ class _WhatIfScreenState extends State<WhatIfScreen> {
               ),
             ),
             const SizedBox(width: 8),
-            const _SmallActionButton(
-                label: 'FAIL', color: GPColors.riskCritical),
-            const SizedBox(width: 4),
-            const _SmallActionButton(label: 'DELAY', color: GPColors.amber),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: GPColors.greenSoft,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                '$credits cr',
+                style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                    color: GPColors.green),
+              ),
+            ),
           ],
         ),
       );
     }).toList();
+  }
+}
+
+// ── Slider label ──────────────────────────────────────────────────────────
+
+class _SliderLabel extends StatelessWidget {
+  const _SliderLabel(this.text, this.active);
+  final String text;
+  final bool active;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontSize: 10,
+        fontWeight: active ? FontWeight.w700 : FontWeight.w500,
+        color: active ? GPColors.green : GPColors.subtext,
+      ),
+    );
   }
 }
 
@@ -673,40 +734,108 @@ class _ToggleRow extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label, style: const TextStyle(fontSize: 13, color: GPColors.text)),
+        Text(label,
+            style: const TextStyle(
+                fontSize: 13,
+                color: GPColors.text,
+                fontWeight: FontWeight.w500)),
         Switch(
           value: value,
           onChanged: onChanged,
-          thumbColor: WidgetStateProperty.resolveWith((states) =>
-              states.contains(WidgetState.selected)
-                  ? GPColors.green
-                  : Colors.grey),
+          activeThumbColor: Colors.white,
+          activeTrackColor: GPColors.green,
+          inactiveThumbColor: Colors.white,
+          inactiveTrackColor: const Color(0xFFCBD5E1),
         ),
       ],
     );
   }
 }
 
-// ── Small action button ───────────────────────────────────────────────────
 
-class _SmallActionButton extends StatelessWidget {
-  const _SmallActionButton({required this.label, required this.color});
-  final String label;
-  final Color color;
+// ── Risk gauge ────────────────────────────────────────────────────────────
+
+class _RiskGauge extends StatelessWidget {
+  const _RiskGauge({required this.score});
+  final int score;
+
+  Color get _color => score > 60
+      ? GPColors.riskCritical
+      : score > 30
+          ? GPColors.amber
+          : GPColors.green;
+
+  String get _label => score > 60 ? 'High' : score > 30 ? 'Medium' : 'Low';
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: color.withOpacity(0.3)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: GPColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
-      child: Text(
-        label,
-        style:
-            TextStyle(fontSize: 9, fontWeight: FontWeight.w800, color: color),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 56,
+            height: 56,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                CircularProgressIndicator(
+                  value: score / 100,
+                  strokeWidth: 5.5,
+                  backgroundColor: const Color(0xFFE2E8F0),
+                  valueColor: AlwaysStoppedAnimation(_color),
+                  strokeCap: StrokeCap.round,
+                ),
+                Center(
+                  child: Text(
+                    '$score%',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w900,
+                      color: _color,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'RISK SCORE',
+                style: TextStyle(
+                  fontSize: 9,
+                  fontWeight: FontWeight.w700,
+                  color: GPColors.subtext,
+                  letterSpacing: 0.8,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                _label,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
+                  color: _color,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -739,17 +868,24 @@ class _KpiCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: GPColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            width: 44,
-            height: 44,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              color: accentColor.withOpacity(0.1),
+              color: accentColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(icon, color: accentColor, size: 22),
+            child: Icon(icon, color: accentColor, size: 24),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -832,23 +968,51 @@ class _DynamicRoadmap extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           if (terms.isEmpty)
-            const Text('Run a simulation to see your dynamic roadmap.',
-                style: TextStyle(color: GPColors.subtext))
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              decoration: BoxDecoration(
+                color: GPColors.bg,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Column(
+                children: [
+                  Icon(Icons.route_outlined, size: 32, color: GPColors.subtext),
+                  SizedBox(height: 8),
+                  Text(
+                    'Run a simulation to see your dynamic roadmap.',
+                    style: TextStyle(color: GPColors.subtext, fontSize: 13),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            )
           else
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: terms.map((t) {
-                  final name = t['term_name'] as String? ?? 'Term';
-                  final credits = (t['credits'] as num?)?.toInt() ?? 0;
-                  final items = (t['items'] as List?) ?? [];
-                  return _RoadmapTermNode(
-                    name: name,
-                    credits: credits,
-                    courseCount: items.length,
-                    isWip: t['status'] == 'wip',
-                  );
-                }).toList(),
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (int i = 0; i < terms.length; i++) ...[
+                    _RoadmapTermNode(
+                      name: terms[i]['term_name'] as String? ?? 'Term',
+                      credits: (terms[i]['credits'] as num?)?.toInt() ?? 0,
+                      courseCount: ((terms[i]['items'] as List?) ?? []).length,
+                      isWip: terms[i]['status'] == 'wip',
+                    ),
+                    if (i < terms.length - 1)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 32),
+                        child: Row(
+                          children: [
+                            Container(width: 20, height: 2, color: GPColors.border),
+                            const Icon(Icons.arrow_forward_ios_rounded,
+                                size: 10, color: GPColors.subtext),
+                          ],
+                        ),
+                      ),
+                  ],
+                ],
               ),
             ),
         ],
@@ -869,63 +1033,135 @@ class _RoadmapTermNode extends StatelessWidget {
   final int courseCount;
   final bool isWip;
 
+  Color _seasonBg(String season) => switch (season) {
+        'FALL' => GPColors.fallBg,
+        'SUMMER' => GPColors.summerBg,
+        'WINTER' => GPColors.winterBg,
+        _ => GPColors.springBg,
+      };
+
+  Color _seasonBorder(String season) => switch (season) {
+        'FALL' => GPColors.fallBorder,
+        'SUMMER' => GPColors.summerBorder,
+        'WINTER' => GPColors.winterBorder,
+        _ => GPColors.springBorder,
+      };
+
+  Color _seasonAccent(String season) => switch (season) {
+        'FALL' => GPColors.fallAccent,
+        'SUMMER' => GPColors.summerAccent,
+        'WINTER' => GPColors.winterAccent,
+        _ => GPColors.springAccent,
+      };
+
   @override
   Widget build(BuildContext context) {
     final parts = name.trim().split(' ');
     final season = parts.isNotEmpty ? parts.first.toUpperCase() : 'TERM';
     final year = parts.length > 1 ? parts.last : '';
 
-    return Padding(
-      padding: const EdgeInsets.only(right: 12),
-      child: Column(
-        children: [
-          Container(
-            width: 80,
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            decoration: BoxDecoration(
-              color: isWip ? const Color(0xFFFFFBEB) : GPColors.greenSoft,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                  color:
-                      isWip ? const Color(0xFFFCD34D) : GPColors.springBorder),
-            ),
-            child: Column(
-              children: [
-                Icon(isWip ? Icons.sync : Icons.check_circle_outline,
-                    color: isWip ? const Color(0xFFD97706) : GPColors.green,
-                    size: 22),
-                const SizedBox(height: 6),
-                Text(season,
-                    style: TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w800,
-                        color:
-                            isWip ? const Color(0xFFD97706) : GPColors.green)),
-                Text(year,
-                    style:
-                        const TextStyle(fontSize: 9, color: GPColors.subtext)),
-                if (isWip)
-                  const Text('in progress',
-                      style: TextStyle(
-                          fontSize: 7,
-                          color: Color(0xFFD97706),
-                          fontWeight: FontWeight.w600)),
-                if (credits > 0)
-                  Text('$credits cr',
-                      style: const TextStyle(
-                          fontSize: 9, color: GPColors.subtext)),
-              ],
-            ),
+    final Color bgColor = isWip
+        ? const Color(0xFFFFFBEB)
+        : _seasonBg(season);
+    final Color borderColor = isWip
+        ? const Color(0xFFFCD34D)
+        : _seasonBorder(season);
+    final Color accentColor = isWip
+        ? const Color(0xFFD97706)
+        : _seasonAccent(season);
+
+    return Column(
+      children: [
+        Container(
+          width: 100,
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+          decoration: BoxDecoration(
+            color: bgColor,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: borderColor, width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-          if (courseCount > 0) ...[
-            const SizedBox(height: 6),
-            Text(
-              '$courseCount courses',
-              style: const TextStyle(fontSize: 9.5, color: GPColors.subtext),
-            ),
-          ],
-        ],
-      ),
+          child: Column(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: accentColor.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  isWip ? Icons.sync_rounded : Icons.check_circle_rounded,
+                  color: accentColor,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                season,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  color: accentColor,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              Text(
+                year,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: GPColors.text,
+                ),
+              ),
+              const SizedBox(height: 6),
+              if (isWip)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: accentColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'In Progress',
+                    style: TextStyle(
+                      fontSize: 8,
+                      fontWeight: FontWeight.w700,
+                      color: accentColor,
+                    ),
+                  ),
+                ),
+              if (credits > 0) ...[
+                const SizedBox(height: 4),
+                Text(
+                  '$credits cr',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: accentColor,
+                  ),
+                ),
+              ],
+              if (courseCount > 0) ...[
+                const SizedBox(height: 2),
+                Text(
+                  '$courseCount courses',
+                  style: const TextStyle(
+                    fontSize: 9,
+                    color: GPColors.subtext,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -947,7 +1183,7 @@ class _OptimizationBanner extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: Colors.white.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.auto_awesome,

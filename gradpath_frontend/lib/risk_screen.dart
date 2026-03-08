@@ -122,108 +122,155 @@ class _RiskScreenState extends State<RiskScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ── Top bar ────────────────────────────────────────────
-          Row(
-            children: [
-              // Gauge circle
-              SizedBox(
-                width: 120,
-                height: 120,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    CircularProgressIndicator(
-                      value: _criticalCount > 0
-                          ? 0.75
-                          : _moderateCount > 0
-                              ? 0.45
-                              : 0.15,
-                      strokeWidth: 10,
-                      backgroundColor: const Color(0xFFE2E8F0),
-                      color: riskColor,
-                    ),
-                    Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          overallRisk.split(' ').first,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w800,
-                            color: riskColor,
-                          ),
-                        ),
-                        const Text(
-                          'STATUS LEVEL',
-                          style:
-                              TextStyle(fontSize: 8, color: GPColors.subtext),
-                        ),
-                      ],
-                    ),
-                  ],
+          // ── Hero header card ───────────────────────────────────
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: GPColors.border),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 12,
+                  offset: const Offset(0, 3),
                 ),
-              ),
-              const SizedBox(width: 24),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Risk Analysis',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w900,
-                        color: GPColors.text,
+              ],
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Big circular gauge
+                SizedBox(
+                  width: 160,
+                  height: 160,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Outer glow ring
+                      Container(
+                        width: 160,
+                        height: 160,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: riskColor.withValues(alpha: 0.06),
+                        ),
                       ),
-                    ),
-                    Text(
-                      'Last scanned: ${DateTime.now().month}/${DateTime.now().day}/${DateTime.now().year} · ${TimeOfDay.now().format(context)}',
-                      style: const TextStyle(
-                          color: GPColors.subtext, fontSize: 12),
-                    ),
-                    const SizedBox(height: 14),
-                    Row(
-                      children: [
-                        _RiskCountBadge(
-                          label: 'CRITICAL ISSUES',
-                          count: _criticalCount,
-                          color: GPColors.riskCritical,
+                      SizedBox(
+                        width: 130,
+                        height: 130,
+                        child: CircularProgressIndicator(
+                          value: _criticalCount > 0
+                              ? 0.78
+                              : _moderateCount > 0
+                                  ? 0.45
+                                  : 0.15,
+                          strokeWidth: 12,
+                          backgroundColor: const Color(0xFFE8EDF2),
+                          valueColor: AlwaysStoppedAnimation(riskColor),
+                          strokeCap: StrokeCap.round,
                         ),
-                        const SizedBox(width: 12),
-                        _RiskCountBadge(
-                          label: 'MODERATE RISKS',
-                          count: _moderateCount,
-                          color: GPColors.amber,
-                        ),
-                        const SizedBox(width: 12),
-                        _RiskCountBadge(
-                          label: 'LOW IMPACTS',
-                          count: _lowCount,
-                          color: GPColors.riskLow,
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            overallRisk.split(' ').first,
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w900,
+                              color: riskColor,
+                              height: 1,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: riskColor.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              'STATUS LEVEL',
+                              style: TextStyle(
+                                fontSize: 8,
+                                fontWeight: FontWeight.w700,
+                                color: riskColor,
+                                letterSpacing: 0.6,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: GPColors.green,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                const SizedBox(width: 28),
+                // Title + badges
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Risk Analysis',
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w900,
+                          color: GPColors.text,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Last scanned: ${DateTime.now().month}/${DateTime.now().day}/${DateTime.now().year} · ${TimeOfDay.now().format(context)}',
+                        style: const TextStyle(
+                            color: GPColors.subtext, fontSize: 12),
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          _RiskCountBadge(
+                            label: 'CRITICAL ISSUES',
+                            count: _criticalCount,
+                            color: GPColors.riskCritical,
+                          ),
+                          const SizedBox(width: 12),
+                          _RiskCountBadge(
+                            label: 'MODERATE RISKS',
+                            count: _moderateCount,
+                            color: GPColors.amber,
+                          ),
+                          const SizedBox(width: 12),
+                          _RiskCountBadge(
+                            label: 'LOW IMPACTS',
+                            count: _lowCount,
+                            color: GPColors.riskLow,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                onPressed: _loadRisks,
-                icon: const Icon(Icons.refresh, size: 16),
-                label: const Text('Re-calculate Risk'),
-              ),
-            ],
+                const SizedBox(width: 20),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: GPColors.green,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 18, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  onPressed: _loadRisks,
+                  icon: const Icon(Icons.refresh_rounded, size: 16),
+                  label: const Text('Re-calculate Risk',
+                      style: TextStyle(fontWeight: FontWeight.w700)),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 24),
 
           // ── Risk category cards ─────────────────────────────────
           Row(
@@ -390,7 +437,7 @@ class _RiskScreenState extends State<RiskScreen> {
             decoration: BoxDecoration(
               color: GPColors.riskModerateSoft,
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: GPColors.amber.withOpacity(0.3)),
+              border: Border.all(color: GPColors.amber.withValues(alpha: 0.3)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -423,27 +470,27 @@ class _RiskCountBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: GPColors.border),
+        color: color.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Column(
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
                 fontSize: 9,
                 fontWeight: FontWeight.w700,
-                color: GPColors.subtext,
+                color: color.withValues(alpha: 0.7),
                 letterSpacing: 0.5),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: 4),
           Text(
             '$count',
             style: TextStyle(
-                fontSize: 26, fontWeight: FontWeight.w900, color: color),
+                fontSize: 30, fontWeight: FontWeight.w900, color: color),
           ),
         ],
       ),
@@ -486,6 +533,13 @@ class _RiskCategoryCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: GPColors.border),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -493,11 +547,19 @@ class _RiskCategoryCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(icon, size: 18, color: badgeColor),
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: badgeColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, size: 18, color: badgeColor),
+              ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: badgeColor.withOpacity(0.1),
+                  color: badgeColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
@@ -659,7 +721,7 @@ class _RiskTable extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: sevColor.withOpacity(0.1),
+                      color: sevColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(

@@ -345,7 +345,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               color: riskBg,
                               borderRadius: BorderRadius.circular(999),
                               border:
-                                  Border.all(color: riskColor.withOpacity(0.3)),
+                                  Border.all(color: riskColor.withValues(alpha: 0.3)),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,

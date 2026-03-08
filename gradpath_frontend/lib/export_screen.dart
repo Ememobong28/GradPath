@@ -650,7 +650,7 @@ class _ExportScreenState extends State<ExportScreen> {
                                 color: GPColors.amberSoft,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                    color: GPColors.amber.withOpacity(0.3)),
+                                    color: GPColors.amber.withValues(alpha: 0.3)),
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1091,7 +1091,7 @@ class _TermSection extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 6, vertical: 3),
                           decoration: BoxDecoration(
-                            color: accentColor.withOpacity(0.1),
+                            color: accentColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(

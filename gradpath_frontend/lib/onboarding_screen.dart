@@ -797,7 +797,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 6),
           DropdownButtonFormField<String>(
-            value: _targetTerm,
+            initialValue: _targetTerm,
             decoration: _fieldDecoration("Select a term..."),
             items: _terms
                 .map((t) => DropdownMenuItem(value: t, child: Text(t)))

@@ -218,7 +218,7 @@ class _GradPathSidebarState extends State<GradPathSidebar> {
                     child: Icon(
                       _collapsed ? Icons.chevron_right : Icons.chevron_left,
                       size: 18,
-                      color: Colors.white.withOpacity(0.6),
+                      color: Colors.white.withValues(alpha: 0.6),
                     ),
                   ),
                 ),
@@ -253,15 +253,15 @@ class _GradPathSidebarState extends State<GradPathSidebar> {
                 margin: const EdgeInsets.all(12),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.06),
+                  color: Colors.white.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: Colors.white.withOpacity(0.08)),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
                 ),
                 child: Row(
                   children: [
                     CircleAvatar(
                       radius: 17,
-                      backgroundColor: GPColors.green2.withOpacity(0.3),
+                      backgroundColor: GPColors.green2.withValues(alpha: 0.3),
                       child: Text(
                         widget.studentName.isNotEmpty
                             ? widget.studentName[0].toUpperCase()
@@ -313,7 +313,7 @@ class _GradPathSidebarState extends State<GradPathSidebar> {
                   message: widget.studentName,
                   child: CircleAvatar(
                     radius: 17,
-                    backgroundColor: GPColors.green2.withOpacity(0.3),
+                    backgroundColor: GPColors.green2.withValues(alpha: 0.3),
                     child: Text(
                       widget.studentName.isNotEmpty
                           ? widget.studentName[0].toUpperCase()
@@ -335,12 +335,12 @@ class _GradPathSidebarState extends State<GradPathSidebar> {
               child: Row(
                 children: [
                   Icon(Icons.settings_outlined,
-                      size: 13, color: Colors.white.withOpacity(0.5)),
+                      size: 13, color: Colors.white.withValues(alpha: 0.5)),
                   const SizedBox(width: 6),
                   Text(
                     'Account Settings',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.5),
+                      color: Colors.white.withValues(alpha: 0.5),
                       fontSize: 11,
                     ),
                   ),
@@ -374,7 +374,7 @@ class _SidebarTile extends StatelessWidget {
     final iconWidget = Icon(
       icon,
       size: 20,
-      color: active ? Colors.white : Colors.white.withOpacity(0.6),
+      color: active ? Colors.white : Colors.white.withValues(alpha: 0.6),
     );
 
     final tile = GestureDetector(
@@ -398,7 +398,7 @@ class _SidebarTile extends StatelessWidget {
                     label,
                     style: TextStyle(
                       color:
-                          active ? Colors.white : Colors.white.withOpacity(0.6),
+                          active ? Colors.white : Colors.white.withValues(alpha: 0.6),
                       fontWeight: active ? FontWeight.w700 : FontWeight.w500,
                       fontSize: 13,
                     ),

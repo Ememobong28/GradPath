@@ -705,13 +705,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               color: isCompleted
                   ? GPColors.border
                   : isHot
-                      ? season.accent.withOpacity(0.5)
+                      ? season.accent.withValues(alpha: 0.5)
                       : season.border,
               width: isHot ? 1.8 : 1.2,
             ),
             boxShadow: [
               BoxShadow(
-                color: season.accent.withOpacity(0.06),
+                color: season.accent.withValues(alpha: 0.06),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -1065,8 +1065,8 @@ class _ProjectedGradPill extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             isWide
-                ? "Projected Graduation · ${term ?? 'May 2026'}"
-                : (term ?? "May 2026"),
+                ? "Projected Graduation · ${term ?? 'TBD'}"
+                : (term ?? "TBD"),
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700,
@@ -1101,7 +1101,7 @@ class _CourseCard extends StatelessWidget {
         boxShadow: dragging
             ? [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.12),
+                  color: Colors.black.withValues(alpha: 0.12),
                   blurRadius: 18,
                   offset: const Offset(0, 10),
                 ),
@@ -1224,7 +1224,7 @@ class _StatusPill extends StatelessWidget {
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: fg.withOpacity(0.2)),
+        border: Border.all(color: fg.withValues(alpha: 0.2)),
       ),
       child: Text(
         label,
@@ -1252,9 +1252,9 @@ class _CreditsPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: c.withOpacity(0.08),
+        color: c.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: c.withOpacity(0.2)),
+        border: Border.all(color: c.withValues(alpha: 0.2)),
       ),
       child: Text(
         "$credits Credits",
@@ -1319,7 +1319,7 @@ class _TagChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: fg.withOpacity(0.2)),
+        border: Border.all(color: fg.withValues(alpha: 0.2)),
       ),
       child: Text(
         tag.label,
@@ -1379,9 +1379,9 @@ class _CourseCodeChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.25)),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
       child: Text(
         code,
