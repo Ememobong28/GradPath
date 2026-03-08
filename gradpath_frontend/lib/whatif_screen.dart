@@ -569,7 +569,7 @@ class _WhatIfScreenState extends State<WhatIfScreen> {
                               borderRadius: BorderRadius.circular(12)),
                         ),
                         onPressed: () {},
-                        icon: const Icon(Icons.bookmark_add_outlined, size: 16),
+                        icon: const Icon(Icons.bookmark_add_outlined, size: 16, color: Colors.white),
                         label: const Text('Save Scenario',
                             style: TextStyle(fontWeight: FontWeight.w700)),
                       ),

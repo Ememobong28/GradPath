@@ -263,7 +263,7 @@ class _RiskScreenState extends State<RiskScreen> {
                         borderRadius: BorderRadius.circular(12)),
                   ),
                   onPressed: _loadRisks,
-                  icon: const Icon(Icons.refresh_rounded, size: 16),
+                  icon: const Icon(Icons.refresh_rounded, size: 16, color: Colors.white),
                   label: const Text('Re-calculate Risk',
                       style: TextStyle(fontWeight: FontWeight.w700)),
                 ),
