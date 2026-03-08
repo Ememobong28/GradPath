@@ -16,51 +16,39 @@
 
 ### Landing Page
 
-<table>
-  <tr>
-    <td><img src="docs/screenshots/landing%20page%201.png" width="800"/></td>
-    <td><img src="docs/screenshots/landing%20page%202.png" width="800"/></td>
-  </tr>
-  <tr>
-    <td><img src="docs/screenshots/landing%20page%203.png" width="800"/></td>
-    <td><img src="docs/screenshots/landing%20page%204.png" width="800"/></td>
-  </tr>
-  <tr>
-    <td><img src="docs/screenshots/landing%20page%205.png" width="800"/></td>
-    <td></td>
-  </tr>
-</table>
+<img src="docs/screenshots/landing%20page%201.png" width="100%"/>
+<img src="docs/screenshots/landing%20page%202.png" width="100%"/>
+<img src="docs/screenshots/landing%20page%203.png" width="100%"/>
+<img src="docs/screenshots/landing%20page%204.png" width="100%"/>
+<img src="docs/screenshots/landing%20page%205.png" width="100%"/>
 
-### Sign In & Onboarding
+### Sign In
 
-<table>
-  <tr>
-    <td><img src="docs/screenshots/Sign-in%20screen.png" width="800"/></td>
-    <td><img src="docs/screenshots/onboarding.png" width="800"/></td>
-  </tr>
-</table>
+<img src="docs/screenshots/Sign-in%20screen.png" width="100%"/>
 
-### Dashboard & Plan
+### Onboarding
 
-<table>
-  <tr>
-    <td><img src="docs/screenshots/Dashboard.png" width="800"/></td>
-    <td><img src="docs/screenshots/Plan.png" width="800"/></td>
-  </tr>
-</table>
+<img src="docs/screenshots/onboarding.png" width="100%"/>
+
+### Dashboard
+
+<img src="docs/screenshots/Dashboard.png" width="100%"/>
+
+### My Plan
+
+<img src="docs/screenshots/Plan.png" width="100%"/>
 
 ### What-If Simulator
 
-<img src="docs/screenshots/What-if%20simulator.png" width="800"/>
+<img src="docs/screenshots/What-if%20simulator.png" width="100%"/>
 
-### Risk Analysis & Export
+### Risk Analysis
 
-<table>
-  <tr>
-    <td><img src="docs/screenshots/Risk%20Page.png" width="800"/></td>
-    <td><img src="docs/screenshots/Export%20Page%20.png" width="800"/></td>
-  </tr>
-</table>
+<img src="docs/screenshots/Risk%20Page.png" width="100%"/>
+
+### Export
+
+<img src="docs/screenshots/Export%20Page%20.png" width="100%"/>
 
 ---
 
