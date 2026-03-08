@@ -54,17 +54,35 @@
 
 ## Deployment
 
+### Frontend — GitHub Pages
+
 The frontend is automatically deployed to **GitHub Pages** on every push to `main`.
 
-**Live site:** `https://immanuellaumoren.github.io/GradPath/`
+**Live site:** `https://ememobong28.github.io/GradPath/`
 
 **How it works** (via [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)):
 1. Push to `main` triggers the workflow
 2. GitHub Actions checks out the repo and installs Flutter 3.27.1
-3. Runs `flutter build web --release --base-href /GradPath/`
+3. Runs `flutter build web --release` with the Render backend URL injected at build time
 4. Deploys the build output from `gradpath_frontend/build/web` to GitHub Pages
 
-> The backend (FastAPI) is not included in the GitHub Pages deploy — it requires a separate server or cloud host.
+### Backend — Render
+
+The FastAPI backend is deployed on **Render** with a managed PostgreSQL database.
+
+**API base URL:** `https://gradpath-backend.onrender.com`
+
+**Services:**
+- `gradpath-backend` — FastAPI web service (Docker, auto-deployed from `main`)
+- `gradpath-db` — PostgreSQL 16 managed database
+
+**How it works** (via [`render.yaml`](render.yaml)):
+1. Push to `main` triggers a Render deploy
+2. Docker builds the image from `gradpath_backend/Dockerfile`
+3. `DATABASE_URL` is automatically injected from the managed Postgres instance
+4. On startup, SQLAlchemy creates all tables automatically
+
+> **Note:** The free Render tier spins down after 15 minutes of inactivity. The first request after idle may take ~30 seconds to wake up.
 
 ---
 
