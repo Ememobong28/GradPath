@@ -193,25 +193,47 @@ def _parse_generic_transcript(content: str) -> list[TranscriptCourse]:
 
 
 def parse_catalog_text(content: str) -> list[dict]:
+    """Extract course listings from a course catalog PDF (any text format).
+
+    Uses a buffering approach: when a course code is detected, we start
+    accumulating metadata—title, credits, availability—from subsequent
+    lines until the next course code appears.  This handles multi-line
+    entries where credits or offered-terms appear on lines below the
+    course heading.
+    """
     rows: list[dict] = []
+    current: dict | None = None
+
+    def _flush() -> None:
+        if current and (current["title"] or current["credits"]):
+            rows.append(current.copy())
+
     for line in _normalize_lines(content):
         code_match = _COURSE_RE.search(line)
-        if not code_match:
-            continue
-        code = f"{code_match.group(1)} {code_match.group(2)}"
-        title = _extract_title(line, code_match.end())
-        credits = _extract_credits(line)
-        if not title and not credits:
-            continue
-        rows.append(
-            {
+        if code_match:
+            _flush()
+            code = f"{code_match.group(1)} {code_match.group(2)}"
+            title = _extract_title(line, code_match.end())
+            credits = _extract_credits(line) or _extract_trailing_credit(line)
+            current = {
                 "code": code,
                 "title": title,
                 "credits": credits,
                 "availability": _extract_availability(line),
                 "honors_only": "honors" in line.lower(),
             }
-        )
+        elif current:
+            # Fill in missing fields from continuation lines.
+            if current["credits"] is None:
+                current["credits"] = _extract_credits(line) or _extract_trailing_credit(line)
+            if current["availability"] is None:
+                avail = _extract_availability(line)
+                if avail:
+                    current["availability"] = avail
+            if not current["honors_only"] and "honors" in line.lower():
+                current["honors_only"] = True
+
+    _flush()
     return rows
 
 
@@ -241,6 +263,68 @@ def parse_prereq_text(content: str) -> list[dict]:
     return rows
 
 
+# ── Degree audit completion markers ──────────────────────────────────────────
+# Matches keywords/symbols that indicate a requirement is already satisfied.
+_AUDIT_COMPLETED_RE = re.compile(
+    r"\b(complete[d]?|satisfied|met|passed|earned|[✓✔☑])\b",
+    re.IGNORECASE,
+)
+# Matches in-progress indicators.
+_AUDIT_WIP_RE = re.compile(
+    r"\b(in[- ]?progress|enrolled|active|wip|ip)\b",
+    re.IGNORECASE,
+)
+
+
+def parse_degree_audit_text(content: str) -> list[dict]:
+    """Extract required courses from a degree audit PDF.
+
+    Scans each line for a course code pattern and records:
+      - code   : normalised course code ("DEPT NNN")
+      - title  : course title if present on the same line
+      - credits: credit hours if present on the same line
+      - status : "completed" | "in_progress" | "required"
+
+    Status is inferred from surrounding text on the same line.  When the
+    status cannot be determined the course is assumed to still be required
+    (i.e. not yet completed).  The caller can cross-reference with the
+    student's transcript to get a definitive completion list.
+    """
+    rows: list[dict] = []
+    seen: set[str] = set()
+
+    for line in _normalize_lines(content):
+        code_match = _COURSE_RE.search(line)
+        if not code_match:
+            continue
+
+        code = f"{code_match.group(1)} {code_match.group(2)}"
+        if code in seen:
+            continue
+        seen.add(code)
+
+        title = _extract_title(line, code_match.end())
+        credits = _extract_credits(line)
+
+        lower = line.lower()
+        if _AUDIT_COMPLETED_RE.search(lower) or _GRADE_RE.search(line):
+            status = "completed"
+        elif _AUDIT_WIP_RE.search(lower):
+            status = "in_progress"
+        else:
+            status = "required"
+
+        rows.append(
+            {
+                "code": code,
+                "title": title,
+                "credits": credits,
+                "status": status,
+            }
+        )
+    return rows
+
+
 def _compute_confidence(term: str | None, credits: int | None, grade: str | None) -> float:
     """Score 0.4–1.0: base for code match + bonuses for each additional field found."""
     score = 0.40
@@ -266,6 +350,9 @@ _TERM_RE = re.compile(r"\b(Spring|Summer|Fall|Winter)\s+(20\d{2})\b", re.I)
 _COURSE_RE = re.compile(r"\b([A-Z]{2,4})\s?-?\s?(\d{3}[A-Z]?)\b")
 _CREDITS_RE = re.compile(r"(\d+(?:\.\d+)?)\s*(?:cr|credits)\b", re.I)
 _GRADE_RE = re.compile(r"\b([ABCDF][+-]?)\b")
+# Bare credit integer at end of a line (e.g. "CSCI 101 Intro to CS  3").
+# Only matches 1–6 so years, section numbers, etc. are not captured.
+_TRAILING_CREDIT_RE = re.compile(r"(?<!\d)([1-6])\s*$")
 
 
 def _normalize_lines(content: str):
@@ -290,6 +377,15 @@ def _extract_credits(line: str) -> int | None:
     if match:
         return _to_int(match.group(1))
     return None
+
+
+def _extract_trailing_credit(line: str) -> int | None:
+    """Return a bare credit count from the end of a line when no 'cr'/'credits'
+    suffix is present.  Only accepts 1–6 to avoid false positives."""
+    if _CREDITS_RE.search(line):
+        return None  # already handled by _extract_credits
+    m = _TRAILING_CREDIT_RE.search(line.rstrip())
+    return int(m.group(1)) if m else None
 
 
 def _extract_grade(line: str) -> str | None:

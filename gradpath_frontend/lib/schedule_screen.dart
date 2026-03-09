@@ -108,8 +108,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       if (genResp.statusCode < 200 || genResp.statusCode >= 300) {
         throw Exception('Re-optimization failed (${genResp.statusCode}).');
       }
-      final planId =
-          (jsonDecode(genResp.body) as Map<String, dynamic>)['plan_id'] as int?;
+      final genBody = jsonDecode(genResp.body) as Map<String, dynamic>;
+      final genStatus = genBody['status'] as String?;
+      if (genStatus == 'needs_degree_audit') {
+        throw Exception(
+            'Please upload your degree audit before re-optimizing.');
+      }
+      if (genStatus == 'error') {
+        throw Exception(genBody['message'] as String? ?? 'Plan generation failed.');
+      }
+      final planId = genBody['plan_id'] as int?;
       if (planId == null) throw Exception('No plan ID returned.');
 
       // ── 2. Fetch plan detail ───────────────────────────────────────────────
@@ -267,6 +275,197 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _reoptimizing = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
+    }
+  }
+
+  Future<void> _showAddElectiveDialog() async {
+    final studentId =
+        widget.studentId ?? (widget.planDetail?['student_id'] as num?)?.toInt();
+    if (studentId == null) return;
+
+    // Fetch courses from catalog that aren't already in the student's requirements
+    List<Map<String, dynamic>> electives = [];
+    try {
+      final resp = await http.get(
+        Uri.parse(
+            '${GradPathConfig.backendBaseUrl}/api/courses/electives?student_id=$studentId'),
+      );
+      if (resp.statusCode == 200) {
+        electives = (jsonDecode(resp.body) as List)
+            .whereType<Map<String, dynamic>>()
+            .toList();
+      }
+    } catch (_) {}
+
+    if (!mounted) return;
+    if (electives.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('No additional courses found in the catalog.')),
+      );
+      return;
+    }
+
+    Map<String, dynamic>? chosen;
+    final searchCtrl = TextEditingController();
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setS) {
+          final q = searchCtrl.text.trim().toLowerCase();
+          final filtered = electives.where((e) {
+            final code = (e['code'] as String? ?? '').toLowerCase();
+            final title = (e['title'] as String? ?? '').toLowerCase();
+            return q.isEmpty || code.contains(q) || title.contains(q);
+          }).toList();
+
+          return AlertDialog(
+            title: const Text(
+              'Add Elective',
+              style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+            ),
+            contentPadding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            content: SizedBox(
+              width: 420,
+              height: 380,
+              child: Column(
+                children: [
+                  TextField(
+                    controller: searchCtrl,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                      hintText: 'Search by course code or name…',
+                      hintStyle: const TextStyle(
+                          fontSize: 13, color: GPColors.subtext),
+                      prefixIcon: const Icon(Icons.search, size: 18),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 10),
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                      ),
+                    ),
+                    onChanged: (_) => setS(() {}),
+                  ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: filtered.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'No courses found.',
+                              style: TextStyle(color: GPColors.subtext),
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: filtered.length,
+                            itemBuilder: (_, i) {
+                              final e = filtered[i];
+                              final code = e['code'] as String? ?? '';
+                              final title = e['title'] as String? ?? code;
+                              final credits = e['credits'] as int?;
+                              final isSelected = chosen?['code'] == code;
+                              return ListTile(
+                                dense: true,
+                                selected: isSelected,
+                                selectedTileColor: const Color(0xFFEAFBF0),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
+                                title: Text(
+                                  code,
+                                  style: TextStyle(
+                                    fontSize: 12.5,
+                                    fontWeight: isSelected
+                                        ? FontWeight.w700
+                                        : FontWeight.w600,
+                                    color: isSelected
+                                        ? GPColors.green
+                                        : GPColors.text,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  title,
+                                  style: const TextStyle(
+                                      fontSize: 11.5, color: GPColors.subtext),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                trailing: credits != null
+                                    ? Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 7, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFF1F5F9),
+                                          borderRadius:
+                                              BorderRadius.circular(999),
+                                        ),
+                                        child: Text(
+                                          '$credits cr',
+                                          style: const TextStyle(
+                                              fontSize: 11,
+                                              color: GPColors.subtext,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                      )
+                                    : null,
+                                onTap: () => setS(() => chosen = e),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Cancel',
+                    style: TextStyle(color: GPColors.subtext)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: GPColors.green,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                ),
+                onPressed: chosen == null ? null : () => Navigator.pop(ctx),
+                child: const Text('Add to Plan',
+                    style: TextStyle(fontWeight: FontWeight.w700)),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    searchCtrl.dispose();
+    if (chosen == null || !mounted) return;
+
+    final courseCode = chosen!['code'] as String? ?? '';
+    try {
+      final resp = await http.post(
+        Uri.parse(
+            '${GradPathConfig.backendBaseUrl}/api/students/$studentId/electives'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'course_code': courseCode}),
+      );
+      if (resp.statusCode < 200 || resp.statusCode >= 300) {
+        throw Exception('Could not add elective.');
+      }
+      // Regenerate and refresh the plan
+      await _reoptimize();
+    } catch (e) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.toString())),
         );
@@ -571,13 +770,39 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     onReoptimize: _reoptimize,
                   ),
                   const SizedBox(height: 18),
-                  const Text(
-                    "Term-by-Term Path",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                      color: GPColors.text,
-                    ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Expanded(
+                        child: Text(
+                          "Term-by-Term Path",
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            color: GPColors.text,
+                          ),
+                        ),
+                      ),
+                      OutlinedButton.icon(
+                        onPressed:
+                            _reoptimizing ? null : _showAddElectiveDialog,
+                        icon: const Icon(Icons.add, size: 14),
+                        label: const Text(
+                          '+ Add Elective',
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.w700),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: GPColors.green,
+                          side: const BorderSide(color: Color(0xFFBBF7D0)),
+                          backgroundColor: GPColors.greenSoft,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 4),
                   const Text(

@@ -5,8 +5,11 @@ from sqlalchemy.orm import Session
 from app.models.plan import Plan, PlanTerm, PlanItem
 from app.models.student import Student
 from app.models.course import Course
+from app.models.document import DocumentUpload
 from app.models.transcript import Transcript, TranscriptCourse
 from app.models.prerequisite import Prerequisite
+from app.models.program import Program
+from app.models.requirement import Requirement, RequirementCourse
 from app.models.risk import Risk
 from app.schemas.plan import PlanGenerateRequest, PlanGenerateResponse, SemesterOut
 from app.services.graph import build_graph, topo_sort
@@ -58,6 +61,15 @@ def generate_plan(db: Session, payload: PlanGenerateRequest) -> PlanGenerateResp
             honors_only=course.honors_only or False,
         )
 
+    # ── Restrict to degree audit requirements when available ─────────────────
+    # If any of the student's DB records have a degree audit program, use its
+    # required course list to limit the scheduling universe.  This prevents the
+    # planner from scheduling the entire catalog when only ~40 targeted courses
+    # are actually needed for this student's degree.
+    required_codes = _get_degree_audit_codes(db, sibling_ids)
+    if required_codes:
+        offerings = {code: co for code, co in offerings.items() if code in required_codes}
+
     prereq_map = {code: set() for code in offerings.keys()}
     coreq_map: dict[str, set[str]] = {}
     optional_map: dict[str, set[str]] = {}
@@ -91,6 +103,36 @@ def generate_plan(db: Session, payload: PlanGenerateRequest) -> PlanGenerateResp
                 semesters=[],
                 risk_summary=[],
             )
+
+    # ── Degree audit gate ────────────────────────────────────────────────────
+    # Without a degree audit we don't know which courses are in scope for this
+    # student's specific degree, so planning would try to schedule the entire
+    # catalog.  Block here and ask the student to upload their degree audit.
+    # (Graduating students are exempt — they exit above via the graduation check.)
+    has_degree_audit = (
+        db.query(DocumentUpload)
+        .filter(
+            DocumentUpload.student_id.in_(sibling_ids),
+            DocumentUpload.kind == "degree_audit",
+        )
+        .first()
+        is not None
+    )
+    if not has_degree_audit:
+        plan.status = "error"
+        db.commit()
+        return PlanGenerateResponse(
+            student_id=payload.student_id,
+            status="needs_degree_audit",
+            message=(
+                "A degree audit is required to generate your plan. "
+                "Please upload your degree audit PDF from your student portal "
+                "so GradPath knows which courses apply to your degree."
+            ),
+            plan_id=plan.id,
+            semesters=[],
+            risk_summary=[],
+        )
 
     schedule = schedule_terms(
         ordered_courses=ordered_courses,
@@ -183,3 +225,23 @@ def _parse_term_label(label: str) -> tuple[str, int, int] | None:
         return None
     order = {"Spring": 1, "Summer": 2, "Fall": 3, "Winter": 4}.get(term, 5)
     return term, year, order
+
+
+def _get_degree_audit_codes(db: Session, student_ids: list[int]) -> set[str]:
+    """Return required course codes from any degree audit program linked to
+    one of the given student DB record IDs.  Returns an empty set when no
+    degree audit has been uploaded (planner falls back to the full catalog)."""
+    program = (
+        db.query(Program)
+        .filter(Program.student_id.in_(student_ids))
+        .first()
+    )
+    if not program:
+        return set()
+    codes = (
+        db.query(RequirementCourse.course_code)
+        .join(Requirement, RequirementCourse.requirement_id == Requirement.id)
+        .filter(Requirement.program_id == program.id)
+        .all()
+    )
+    return {row[0] for row in codes if row[0]}

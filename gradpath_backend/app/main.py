@@ -36,6 +36,7 @@ def on_startup():
         from sqlalchemy import text
         for stmt in [
             "ALTER TABLE plan_items ADD COLUMN IF NOT EXISTS credits INTEGER",
+            "ALTER TABLE programs ADD COLUMN IF NOT EXISTS student_id INTEGER",
         ]:
             try:
                 conn.execute(text(stmt))

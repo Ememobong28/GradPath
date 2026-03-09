@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
+from fastapi import APIRouter, Body, Depends, File, HTTPException, Query, UploadFile
 from sqlalchemy.orm import Session
 
 # 20 MB hard cap on every upload
@@ -48,6 +48,9 @@ from app.models.user import User
 from app.models.transcript import Transcript
 from app.models.plan import Plan
 from app.models.student import Student
+from app.models.course import Course
+from app.models.requirement import Requirement, RequirementCourse
+from app.models.program import Program
 
 router = APIRouter(prefix="/api")
 
@@ -90,6 +93,82 @@ def upload_courses_endpoint(
     raw = file.file.read().decode("utf-8", errors="ignore")
     rows = parse_catalog_csv(raw)
     return bulk_create_courses(db, [CourseCreate(**row) for row in rows])
+
+
+# IMPORTANT: /courses/electives must appear BEFORE any /courses/{id} wildcard
+@router.get("/courses/electives")
+def get_electives_endpoint(
+    student_id: int = Query(..., description="DB student ID"),
+    db: Session = Depends(get_db),
+):
+    """Return catalog courses that are NOT already in the student's degree requirements."""
+    program = db.query(Program).filter(Program.student_id == student_id).first()
+    required_codes: set[str] = set()
+    if program:
+        rows = (
+            db.query(RequirementCourse.course_code)
+            .join(Requirement, RequirementCourse.requirement_id == Requirement.id)
+            .filter(Requirement.program_id == program.id)
+            .all()
+        )
+        required_codes = {r[0] for r in rows if r[0]}
+
+    electives = [
+        {"code": c.code, "title": c.title, "credits": c.credits}
+        for c in db.query(Course).order_by(Course.code).all()
+        if c.code not in required_codes
+    ]
+    return electives
+
+
+@router.post("/students/{student_id}/electives")
+def add_elective_endpoint(
+    student_id: int,
+    payload: dict = Body(...),
+    db: Session = Depends(get_db),
+):
+    """Add a catalog course to the student's degree requirements, then the caller
+    should trigger plan regeneration to schedule it."""
+    course_code = (payload.get("course_code") or "").strip()
+    if not course_code:
+        raise HTTPException(status_code=422, detail="course_code is required.")
+
+    course = db.query(Course).filter(Course.code == course_code).first()
+    if not course:
+        raise HTTPException(status_code=404, detail=f"Course '{course_code}' not found in catalog.")
+
+    # Find or create the student-scoped program
+    program = db.query(Program).filter(Program.student_id == student_id).first()
+    if not program:
+        program = Program(student_id=student_id, name="Degree Audit")
+        db.add(program)
+        db.flush()
+
+    # Use the first requirement group (or create one)
+    requirement = (
+        db.query(Requirement)
+        .filter(Requirement.program_id == program.id)
+        .first()
+    )
+    if not requirement:
+        requirement = Requirement(program_id=program.id, name="Required Courses", kind="core")
+        db.add(requirement)
+        db.flush()
+
+    # Idempotent: only insert if not already present
+    existing = (
+        db.query(RequirementCourse)
+        .filter(
+            RequirementCourse.requirement_id == requirement.id,
+            RequirementCourse.course_code == course_code,
+        )
+        .first()
+    )
+    if not existing:
+        db.add(RequirementCourse(requirement_id=requirement.id, course_code=course_code))
+        db.commit()
+
+    return {"status": "ok", "course_code": course_code}
 
 
 @router.post("/transcripts/upload", response_model=TranscriptUploadResponse)

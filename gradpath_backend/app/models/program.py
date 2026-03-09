@@ -10,3 +10,6 @@ class Program(Base):
     name = Column(String, nullable=False, index=True)
     catalog_year = Column(String, nullable=True)
     degree = Column(String, nullable=True)
+    # Nullable: NULL means a global/shared program; non-null ties it to one student's
+    # degree audit upload so the planner can restrict scheduling to their requirements.
+    student_id = Column(Integer, nullable=True, index=True)

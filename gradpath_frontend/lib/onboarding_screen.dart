@@ -459,6 +459,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       throw Exception("Plan generation failed.");
     }
     final data = jsonDecode(response.body) as Map<String, dynamic>;
+    // Surface backend gate errors (e.g. missing degree audit) as user-facing messages.
+    final status = data["status"] as String?;
+    if (status == "needs_degree_audit" || status == "error") {
+      throw Exception(
+        data["message"] as String? ?? "Plan generation failed.",
+      );
+    }
     final planId = data["plan_id"] as int?;
     if (planId == null) {
       throw Exception("Plan ID missing from response.");
@@ -1198,28 +1205,45 @@ class _UploadPanel extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
+          const Text(
+            "Upload your academic documents",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13),
+          ),
+          const SizedBox(height: 12),
           Container(
-            width: 40,
-            height: 40,
             decoration: BoxDecoration(
-              color: GPColors.greenSoft,
-              borderRadius: BorderRadius.circular(999),
-              border: Border.all(color: const Color(0xFFBBF7D0)),
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
             ),
-            child:
-                const Icon(Icons.description, color: GPColors.green, size: 18),
+            child: const Column(
+              children: [
+                _DocGuideRow(
+                  label: "Degree Audit",
+                  description: "Your graduation checklist from the student portal",
+                  required: true,
+                ),
+                Divider(height: 1, color: Color(0xFFE2E8F0)),
+                _DocGuideRow(
+                  label: "Transcript",
+                  description: "Your completed course history",
+                  required: false,
+                ),
+                Divider(height: 1, color: Color(0xFFE2E8F0)),
+                _DocGuideRow(
+                  label: "Course Catalog",
+                  description: "All courses at your school — adds scheduling detail",
+                  required: false,
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 10),
           const Text(
-            "Upload your Transcript, Degree Audit,\nCourse Catalog and Pre-requisite List",
+            "PDF or CSV  ·  Max 20 MB per file",
             textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.w800, fontSize: 12.5),
-          ),
-          const SizedBox(height: 6),
-          const Text(
-            "Drag and drop PDF files here, or click to browse",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: GPColors.subtext, fontSize: 11.5),
+            style: TextStyle(color: GPColors.subtext, fontSize: 11),
           ),
           const SizedBox(height: 12),
           if (files.isNotEmpty) ...[
@@ -1247,6 +1271,73 @@ class _UploadPanel extends StatelessWidget {
               ),
             ),
             child: const Text("Browse Files"),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DocGuideRow extends StatelessWidget {
+  const _DocGuideRow({
+    required this.label,
+    required this.description,
+    required this.required,
+  });
+
+  final String label;
+  final String description;
+  final bool required;
+
+  @override
+  Widget build(BuildContext context) {
+    const requiredColor = Color(0xFF16A34A);
+    const optionalColor = Color(0xFF64748B);
+    final badgeColor = required ? requiredColor : optionalColor;
+    final badgeBg = required ? const Color(0xFFDCFCE7) : const Color(0xFFF1F5F9);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+            decoration: BoxDecoration(
+              color: badgeBg,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              required ? "Required" : "Optional",
+              style: TextStyle(
+                fontSize: 9,
+                fontWeight: FontWeight.w700,
+                color: badgeColor,
+                letterSpacing: 0.3,
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1E293B),
+                  ),
+                ),
+                Text(
+                  description,
+                  style: const TextStyle(
+                    fontSize: 10.5,
+                    color: Color(0xFF64748B),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
