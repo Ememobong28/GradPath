@@ -103,7 +103,7 @@ The FastAPI backend is deployed on **Render** with a managed PostgreSQL database
 
 | Layer | Technology |
 |---|---|
-| Frontend | Flutter 3.5 (Dart) — web, iOS, Android, desktop |
+| Frontend | Flutter 3.27 (Dart) — web, iOS, Android, desktop |
 | Backend | FastAPI (Python 3.10+) |
 | Database | PostgreSQL 16 |
 | ORM | SQLAlchemy 2.0 |
@@ -142,6 +142,7 @@ GradPath/
         │   ├── planner.py               # Plan generation orchestrator
         │   ├── simulate.py              # What-if engine
         │   ├── transcript_parser.py     # PDF + CSV transcript parsing
+        │   ├── documents.py             # Degree audit + catalog ingestion
         │   ├── pdf_parser.py            # Raw PDF text extraction
         │   └── students.py             # GPA calculation
         └── main.py                      # App entry point + CORS
@@ -215,6 +216,8 @@ Render term-by-term plan
 | `POST` | `/api/courses/upload` | Upload CSV course catalog |
 | `POST` | `/api/documents/upload` | Upload catalog/prereq PDFs |
 | `GET` | `/api/documents/{id}/parse` | Parse uploaded document |
+| `GET` | `/api/courses/electives` | Get catalog courses not in student's requirements |
+| `POST` | `/api/students/{id}/electives` | Add an elective to student's plan |
 
 ---
 
@@ -222,7 +225,7 @@ Render term-by-term plan
 
 ### Prerequisites
 
-- [Flutter 3.5+](https://flutter.dev/docs/get-started/install)
+- [Flutter 3.27+](https://flutter.dev/docs/get-started/install)
 - Python 3.10+
 - Docker + Docker Compose
 - PostgreSQL 16 (via Docker)
@@ -273,8 +276,9 @@ Frontend runs at `http://localhost:PORT` (Flutter assigns port automatically).
 | `plan_terms` | Semesters within a plan |
 | `plan_items` | Courses within a semester |
 | `risks` | Detected bottlenecks and delay factors |
-| `programs` | Degree programs |
+| `programs` | Degree programs (student-scoped when from degree audit) |
 | `requirements` | Degree requirement groups (core / elective) |
+| `requirement_courses` | Individual courses within a requirement group |
 
 ---
 
@@ -297,17 +301,6 @@ The smoke test runs a full happy-path: register → create student → upload tr
 | `SECRET_KEY` | JWT signing secret | — |
 | `ALGORITHM` | JWT algorithm | `HS256` |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | Token lifetime | `60` |
-
----
-
-## Roadmap
-
-- [ ] Advisor-facing dashboard
-- [ ] Support for double majors and minors
-- [ ] Institution-level analytics
-- [ ] CI/CD pipeline (GitHub Actions)
-- [ ] Production deployment with restricted CORS
-- [ ] ML model for workload intensity prediction
 
 ---
 
