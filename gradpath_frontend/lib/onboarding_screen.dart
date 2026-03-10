@@ -850,6 +850,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       states.contains(WidgetState.selected)
                           ? _actionGreen
                           : Colors.grey),
+                  trackColor: WidgetStateProperty.resolveWith((states) =>
+                      states.contains(WidgetState.selected)
+                          ? _actionGreen.withValues(alpha: 0.4)
+                          : Colors.grey.withValues(alpha: 0.3)),
                 ),
               ],
             ),
@@ -963,6 +967,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       states.contains(WidgetState.selected)
                           ? _actionGreen
                           : Colors.grey),
+                  trackColor: WidgetStateProperty.resolveWith((states) =>
+                      states.contains(WidgetState.selected)
+                          ? _actionGreen.withValues(alpha: 0.4)
+                          : Colors.grey.withValues(alpha: 0.3)),
                 ),
               ],
             ),
