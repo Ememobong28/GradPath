@@ -92,7 +92,7 @@ def generate_plan(db: Session, payload: PlanGenerateRequest) -> PlanGenerateResp
     if student and student.target_grad_term and _start_term and _start_year:
         tgt = _parse_term_label(student.target_grad_term)
         _start_parsed = _parse_term_label(f"{_start_term} {_start_year}")
-        if tgt and _start_parsed and (_start_parsed[1], _start_parsed[2]) > (tgt[1], tgt[2]):
+        if tgt and _start_parsed and (_start_parsed[1], _start_parsed[2]) >= (tgt[1], tgt[2]):
             plan.status = "complete"
             db.commit()
             return PlanGenerateResponse(
