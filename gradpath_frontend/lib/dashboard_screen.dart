@@ -83,6 +83,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (resp.statusCode == 200) {
         final data = jsonDecode(resp.body) as Map<String, dynamic>;
         planId = data['plan_id'] as int?;
+        // Seed projected grad from student's chosen target term — will be
+        // overwritten by the plan's last term if the plan has future semesters.
+        final targetTerm = data['target_grad_term'] as String?;
+        if (targetTerm != null && mounted) {
+          setState(() => _projectedGrad ??= targetTerm);
+        }
       }
     } catch (_) {}
     // Fall back to widget prop if student fetch failed
@@ -228,7 +234,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         _wipCredits = wipCr;
         _wipTermName = wipTerm;
         _transcriptTermCount = sortedTerms.length;
-        _projectedGrad = grad;
+        _projectedGrad ??= grad;
       });
     } catch (_) {}
   }
