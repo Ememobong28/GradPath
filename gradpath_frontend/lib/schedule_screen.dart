@@ -203,7 +203,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
               .map((c) => _ScheduledCourse(
                     code: (c['course_code'] as String?) ?? 'TBD',
                     title: (c['course_title'] as String?) ?? 'Course',
-                    credits: (c['credits'] as num?)?.toInt() ?? 3,
+                    credits: ((c['credits'] as num?)?.toInt() ?? 0) > 0
+                        ? (c['credits'] as num).toInt()
+                        : 3,
                   ))
               .toList();
           final termCr = scheduled.fold(0, (s, c) => s + c.credits);
@@ -593,7 +595,8 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       final status = isWip ? _TermStatus.wip : _TermStatus.completed;
 
       final scheduled = termCourses.map((c) {
-        final cr = (c['credits'] as num?)?.toInt() ?? 3;
+        final rawCr = (c['credits'] as num?)?.toInt();
+        final cr = (rawCr != null && rawCr > 0) ? rawCr : 3;
         return _ScheduledCourse(
           code: (c['course_code'] as String?) ?? 'TBD',
           title: (c['course_title'] as String?) ?? 'Course',
@@ -665,7 +668,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       _termStatuses = statuses;
       _completedCredits = completedCr;
       _totalCredits = totalCr;
-      _projectedGradTerm = projGrad;
+      // Prefer the plan-derived graduation term (set by _loadPlanDetail) over
+      // the transcript estimate, which only advances one semester from the
+      // last transcript entry and is often wrong.
+      _projectedGradTerm = _projectedGradTerm ?? projGrad;
     });
   }
 
@@ -912,7 +918,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
 
     return DragTarget<_DragPayload>(
       onWillAcceptWithDetails: (payload) {
-        if (isCompleted) return false;
+        if (isCompleted || isWip) return false;
         setState(() => _hoveredTerm = term);
         return true;
       },
@@ -1021,7 +1027,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       ...courses.map(
                         (course) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),
-                          child: isCompleted
+                          child: (isCompleted || isWip)
                               ? _CourseCard(course: course, locked: true)
                               : Draggable<_DragPayload>(
                                   data: _DragPayload(
