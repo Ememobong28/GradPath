@@ -121,8 +121,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           final termName = lastTerm?['term_name'] as String?;
           if (termName != null && mounted) {
             setState(() {
-              // Only set from plan if transcript didn't already set it
-              _projectedGrad ??= termName;
+              // Plan knows the true graduation term — always prefer it
+              _projectedGrad = termName;
             });
           }
         }

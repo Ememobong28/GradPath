@@ -90,6 +90,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     "Fall 2027",
     "Spring 2028",
     "Fall 2028",
+    "Spring 2029",
+    "Fall 2029",
     "Not sure yet",
   ];
 
