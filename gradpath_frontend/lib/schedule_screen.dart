@@ -248,13 +248,16 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
         }
         // Graduation term: WIP semester itself when credits are met OR plan
         // returned complete (no future semesters scheduled).
+        // Otherwise keep newGradTerm as set from the plan's last term above.
         if (isGradSemester && lastTx != null) {
           newGradTerm = lastTx;
         } else if (genStatus == 'complete' && lastTx != null) {
           newGradTerm = lastTx;
-        } else if (lastTx != null) {
+        } else if (newTerms.isEmpty && lastTx != null) {
+          // No plan terms returned — fall back to one step past transcript
           newGradTerm = _nextTerm(lastTx);
         }
+        // else: newGradTerm already holds the last planned term from the backend
       } else {
         built.addAll(newTerms);
         for (final k in newTerms.keys) {

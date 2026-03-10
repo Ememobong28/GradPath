@@ -134,6 +134,28 @@ def generate_plan(db: Session, payload: PlanGenerateRequest) -> PlanGenerateResp
             risk_summary=[],
         )
 
+    # ── Degree audit detail gate ──────────────────────────────────────────────
+    # The student uploaded a degree audit but the PDF only contained the
+    # summary page (no individual course codes were parsed).  Without course
+    # codes we'd fall back to the entire catalog, producing a wildly incorrect
+    # multi-year plan.  Ask the student to upload the *detailed* view instead.
+    if not required_codes:
+        plan.status = "error"
+        db.commit()
+        return PlanGenerateResponse(
+            student_id=payload.student_id,
+            status="needs_degree_audit",
+            message=(
+                "Your degree audit PDF appears to be the summary page only. "
+                "Please upload the detailed degree audit: on your student portal, "
+                "open 'My Degree Audit', click 'View All Details', then print/save "
+                "that full page as a PDF and upload it here."
+            ),
+            plan_id=plan.id,
+            semesters=[],
+            risk_summary=[],
+        )
+
     schedule = schedule_terms(
         ordered_courses=ordered_courses,
         offerings=offerings,
