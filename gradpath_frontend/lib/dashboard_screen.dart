@@ -87,7 +87,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         // overwritten by the plan's last term if the plan has future semesters.
         final targetTerm = data['target_grad_term'] as String?;
         if (targetTerm != null && mounted) {
-          setState(() => _projectedGrad ??= targetTerm);
+          setState(() => _projectedGrad = targetTerm);
         }
       }
     } catch (_) {}
