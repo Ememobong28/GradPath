@@ -246,8 +246,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
             statuses[next] = _TermStatus.planned;
           }
         }
-        // Graduation term: the WIP semester itself when credits are met
+        // Graduation term: WIP semester itself when credits are met OR plan
+        // returned complete (no future semesters scheduled).
         if (isGradSemester && lastTx != null) {
+          newGradTerm = lastTx;
+        } else if (genStatus == 'complete' && lastTx != null) {
           newGradTerm = lastTx;
         } else if (lastTx != null) {
           newGradTerm = _nextTerm(lastTx);
